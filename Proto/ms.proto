@@ -1,0 +1,27 @@
+package tis;
+
+message UserPush {
+    optional int32 id = 1;
+    optional string xg_device_token = 2;
+    optional string ios_device_token = 3;
+    optional int32 device_type = 4;
+    optional int32 uid = 5;
+}
+
+message UserIndustry {
+    optional int32 id = 1;
+    optional int64 uid = 2;
+    optional int32 industry_id = 3;
+    optional int32 time_create = 4;
+}
+
+message PushConfig {
+    optional int32 uid = 1;
+    optional string config = 2;
+}
+
+message CiMessage {
+    optional int32 mid = 1;
+    optional string content = 2;
+    optional int32 ctime = 3;
+}

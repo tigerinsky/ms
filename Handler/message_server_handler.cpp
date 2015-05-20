@@ -120,7 +120,7 @@ namespace tis {
         return content;
     }
 
-    void MessageServerHandler::new_friend_notify(const NewFriendRequest& request) {
+    /*void MessageServerHandler::new_friend_notify(const NewFriendRequest& request) {
         //记录开始时间
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -160,10 +160,6 @@ namespace tis {
                  single_notify_request.notify = notify;
                  single_notify_request.device_id = xg_device_token.at(j);
                  single_notify_request.device_type = device_type.at(j);
-                 //LOG(INFO) << "before push, device_id: " << xg_device_token.at(j) << endl;
-                 if (can_push(to_uid, config_type)) {
-                        _push_client->single_notify(single_notify_request);
-                 }
                  vector<Info> info_list;
                  info.device_id =  xg_device_token.at(j);
                  info.type = info_type.NEW_FRIEND;
@@ -171,6 +167,10 @@ namespace tis {
                  BatchInfoRequest batch_info_request;
                  batch_info_request.info_list = info_list;
                  batch_info_request.device_type = device_type.at(j);
+                 _push_client->batch_info(batch_info_request);
+                 if (can_push(to_uid, config_type)) {
+                        _push_client->single_notify(single_notify_request);
+                 }
             }
         }
 
@@ -180,10 +180,10 @@ namespace tis {
             << " new friend num=" << rec_uids_len \
             << " cost=" << TIMEDIFF(time_start, time_end) << endl;
 
-    }
+    }*/
 
     //关注和私信通知蓝鲸小秘书
-    int MessageServerHandler::admin_notify(int16_t type,
+    /*int MessageServerHandler::admin_notify(int16_t type,
             int16_t flow, int32_t from_uid,
             int32_t to_uid, int32_t ctime,
             int32_t mid) {
@@ -215,7 +215,7 @@ namespace tis {
             << endl;
 
         return 0;
-    }
+    }*/
 
     bool MessageServerHandler::check_action_frequent(int32_t from_uid,
             int type, int32_t to_uid, int32_t content_id) {
@@ -254,8 +254,8 @@ namespace tis {
         long time_now = get_timestamp();
         std::string from_name;
         get_username(sMsg.from_uid, from_name);
-        NotifyType notify_type;
-        InfoType info_type;
+        MessageType message_type;
+        LandingType landing_type;
 
         timeval t1, t2, t3;
         for (size_t i = 0; i < sMsg.to_uid.size(); i++) {
@@ -275,22 +275,16 @@ namespace tis {
             //系统消息入数据库(私信除外)
             if (ActionType::MAIL != sMsg.action_type
                     && ActionType::NEW_FRIEND > sMsg.action_type) {
-                int ret = _mysql_dao->insert_system_message(
-                        sMsg.from_uid,
-                        from_name.c_str(),
-                        sMsg.action_type,
-                        sMsg.to_uid.at(i),
-                        to_name.c_str(),
-                        sMsg.content_id,
-                        time_now,
-                        time_now);
+                int ret = _mysql_dao->insert_system_message(sMsg.from_uid, from_name.c_str(),
+                        sMsg.action_type, sMsg.to_uid.at(i), to_name.c_str(), sMsg.content_id,
+                        time_now, time_now);
                 if (0 != ret) {
                     LOG(ERROR) << "insert system message error!" << endl;
                 }
             }
 
 
-            //蓝鲸小秘书私信或被关注
+            /*//蓝鲸小秘书私信或被关注
             int to_dummy = get_dummy(sMsg.to_uid.at(i));
             if (2 == to_dummy) {//1:后台小马甲; 2:小秘书
                 int flow = 1;
@@ -302,7 +296,7 @@ namespace tis {
                     _mysql_dao->get_message(sMsg.content_id, content, ctime);
                     admin_notify(1, flow, sMsg.from_uid, sMsg.to_uid.at(i), ctime, sMsg.content_id);
                 }
-            }
+            }*/
 
             //读数据库ci_user_push得到每个用户的deviceType和xg_device_token. 
             vector<int32_t> device_type;
@@ -313,10 +307,14 @@ namespace tis {
                 //LOG(INFO) << "get_device_info ok!" << endl;
                 gettimeofday(&t2, NULL);
                 Notify notify;
-                Info info;
-                notify.title = "蓝鲸消息"; //TODO 临时文案
-                notify.type = notify_type.SYSTEM_MSG;
+                notify.mtype = message_type.NOTIFY;
+                notify.title = "美院帮消息"; //TODO 临时文案
+                notify.ltype = landing_type.SYSTEM_MSG;
                 string config_type = "";
+
+                Notify red_remind;
+                red_remind.mtype = message_type.NOTIFYRED;
+                red_remind.num = 1;
                 switch (sMsg.action_type) {
                     case 0:
                         notify.content = from_name + " @了你";
@@ -324,10 +322,10 @@ namespace tis {
                         break;
                     case 1:
                         notify.content = from_name + " 给你发了一条私信";
-                        notify.type = notify_type.PRIVATE_MSG;
+                        notify.ltype = landing_type.PRIVATE_MSG;
                         notify.uid = sMsg.from_uid;
-                        info.type = info_type.PRIVATE_MSG;
-                        info.uid = sMsg.from_uid;
+                        red_remind.ltype = message_type.EMAILRED;
+                        red_remind.uid = sMsg.from_uid;
                         config_type.assign("pmsg_notify");
                         break;
                     case 2:
@@ -356,38 +354,39 @@ namespace tis {
                         break;*/
                     case 9:
                         notify.content = "认证通过";
-                        notify.type = notify_type.INDEX;
+                        notify.ltype = landing_type.INDEX;
                         break;
                     default:
                         break;
                 }
                 for (size_t j = 0; j < xg_device_token.size(); j++) {
                     SingleNotifyRequest single_notify_request;
-                    single_notify_request.notify = notify;
+                    single_notify_request.notify = red_remind;
                     single_notify_request.device_id = xg_device_token.at(j);
                     single_notify_request.device_type = device_type.at(j);
-                    //LOG(INFO) << "before push, device_id: " << xg_device_token.at(j) << endl;
-                    if (can_push(sMsg.to_uid.at(i), config_type)) {
+
+                    //推送小红点
+                    _push_client->single_notify(single_notify_request);
+
+                    //推送通知
+                    single_notify_request.notify = notify;
+                    if(single_notify_request.device_type == 2 || 
+                       (single_notify_request.device_type == 1 && can_push(sMsg.to_uid.at(i), config_type))) {
                         _push_client->single_notify(single_notify_request);
-                    }
-                    if (sMsg.action_type == 1) {
-                        vector<Info> info_list;
-                        info.device_id =  xg_device_token.at(j);
-                        info_list.push_back(info);
-                        BatchInfoRequest batch_info_request;
-                        batch_info_request.info_list = info_list;
-                        batch_info_request.device_type = device_type.at(j);
-                        _push_client->batch_info(batch_info_request);
                     }
                 }
             }
 
-            //增加我的消息的小红点,包括好友通知,系统通知和私信
+            //消息入redis队列
             char buffer[128];
             snprintf(buffer, sizeof(buffer), "%d", sMsg.to_uid.at(i));
             if (sMsg.action_type == 1) {//私信队列加1
-                if (RedisProxy::REDIS_ZINCR_OK != _redis_proxy->zincr("ms:pmsg", buffer, strlen(buffer), 1)) {
-                    LOG(ERROR) << "zincr ms:pmsg error" << sMsg.to_uid.at(i) << endl;
+                string key = "ms:pmsg";
+                char from_uid[128];
+                snprintf(from_uid, sizeof(from_uid), "%d", sMsg.from_uid);
+                key += buffer;
+                if (RedisProxy::REDIS_ZINCR_OK != _redis_proxy->zincr(key.c_str(), from_uid, strlen(from_uid), 1)) {
+                    LOG(ERROR) << "zincr " << key << " error " << sMsg.from_uid << endl;
                 }
             }
             else {//其它系统消息加1
@@ -415,13 +414,13 @@ namespace tis {
             int32_t uid,
             std::string& name) {
         ThreadSpace* tsp = __get_thread_space();
-        RedisProxy* _cache_redis_proxy = tsp->_cache_redis_proxy;
+        RedisProxy* _redis_proxy = tsp->_redis_proxy;
 
         int ret = -1;
         char uid_buf[128];
         snprintf(uid_buf, sizeof(uid_buf), "user_%d", uid);
         if (RedisProxy::REDIS_HGET_OK == 
-                _cache_redis_proxy->hget(uid_buf, "sname", name)) {
+                _redis_proxy->hget(uid_buf, "sname", name)) {
             ret = 0;
         } else {
             LOG(ERROR) << "get user name error! uid = " << uid << endl;
@@ -432,12 +431,12 @@ namespace tis {
     int MessageServerHandler::get_dummy(int32_t uid) {
         string dummy("");
         ThreadSpace* tsp = __get_thread_space();
-        RedisProxy* _cache_redis_proxy = tsp->_cache_redis_proxy;
+        RedisProxy* _redis_proxy = tsp->_redis_proxy;
         int res = -1;
         char uid_buf[128];
         snprintf(uid_buf, sizeof(uid_buf), "user_%d", uid);
         if (RedisProxy::REDIS_HGET_OK ==
-                _cache_redis_proxy->hget(uid_buf, "dummy", dummy)) {
+                _redis_proxy->hget(uid_buf, "dummy", dummy)) {
             if (dummy != "") {
                 res = atoi(dummy.c_str());
             }
@@ -493,6 +492,9 @@ namespace tis {
         long time_start = get_timestamp();
         if (queue_type == 1) {
             key.assign("ms:pmsg");
+            char uid_str[128];
+            snprintf(uid_str, sizeof(uid_str), "%d", uid);
+            key += uid_str;
         }
         else if (queue_type == 2) {
             key.assign("ms:friend");
@@ -507,6 +509,17 @@ namespace tis {
         ThreadSpace* tsp = __get_thread_space();
         RedisProxy* _redis_proxy = tsp->_redis_proxy; 
 
+        uint64_t pmsg_len;
+        if (queue_type == 1) {
+            if (RedisProxy::REDIS_ZCARD_OK != _redis_proxy->zcard(key.c_str(), &pmsg_len)) {
+                LOG(ERROR) << "get pmsg num error" << endl;
+                return 0;
+            }
+            LOG(INFO) <<"[get_red_num]"<<" uid="<<uid<<" key="<<key<<" len="<<pmsg_len<<endl;
+             
+            return pmsg_len;
+        }
+
         string score;
         char value[100];
         snprintf(value, sizeof(value), "%d", uid);
@@ -518,7 +531,7 @@ namespace tis {
                     << " key: " << key.c_str()\
                     << " value: " << value << endl;
             }
-            return -1;
+            return 0;
         }
         long time_end = get_timestamp();
         LOG(INFO) <<"[get_red_num]"<<" uid="<<value<<" key="<<key<<" score="<<score<<" cost="<<time_end - time_start<<endl;
@@ -527,7 +540,7 @@ namespace tis {
 
     }
 
-    void MessageServerHandler::set_read(const int32_t sysMessageId) {
+    void MessageServerHandler::set_read(const int32_t sysMessageId) {//move to off_hub
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -549,7 +562,7 @@ namespace tis {
         }
     }
 
-    void MessageServerHandler::set_delete(const int32_t sysMessageId) {
+    void MessageServerHandler::set_delete(const int32_t sysMessageId) {//TODO move to off_hub
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -575,7 +588,8 @@ namespace tis {
     void MessageServerHandler::clear_red_by_uid(
             const int32_t uid, 
             const int32_t mType,
-            const int32_t num) {
+            const int32_t num,
+            const int32_t from_uid) {
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -592,8 +606,11 @@ namespace tis {
             key.assign("ms:msg");
         } else if (7 == mType) {
             key.assign("ms:friend");
-        } else if (8 == mType) {
+        } else if (8 == mType) {//此时，需要知道具体是消除哪个from_uid的私信
             key.assign("ms:pmsg");
+            char uid_str[128];
+            snprintf(uid_str, sizeof(uid_str), "%d", uid);
+            key += uid_str;
         }
         else {
             LOG(ERROR) << "mType error" << endl;
@@ -601,7 +618,12 @@ namespace tis {
         }
 
         char buffer[128];
-        snprintf(buffer, sizeof(buffer), "%d", uid);
+        if (8 == mType) {
+            snprintf(buffer, sizeof(buffer), "%d", from_uid);
+        }
+        else {
+            snprintf(buffer, sizeof(buffer), "%d", uid);
+        }
         _redis_proxy->zrem(key.c_str(), buffer, strlen(buffer));
 
         timeval time_end;
@@ -610,7 +632,7 @@ namespace tis {
             << " cost=" << TIMEDIFF(time_start, time_end) << endl;
     }
 
-    void MessageServerHandler::update_config(const int32_t key, const string& value) {
+    void MessageServerHandler::update_config(const int32_t key, const string& value) {//TODO config缓存移到redis中
         int32_t uid = key;
         string a = value;
         g_data.g_shared_push_config.update(uid, a);
@@ -657,8 +679,8 @@ namespace tis {
             << endl;
     }
 
-    void MessageServerHandler::notice_notify(
-            const NoticeRequest& request) {
+    void MessageServerHandler::mis_notify(
+            const MisRequest& request) {//TODO 通过offhub调用
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -667,13 +689,14 @@ namespace tis {
         MysqlDAO* _mysql_dao = tsp->_mysql_dao;
         PushClient* _push_client = tsp->_push_client;
 
-        int industry_id = request.industry_id;
+        int is_broadcast = request.is_broadcast;
         Notify notify;
-        notify.type = request.type;
+        notify.mtype = 1;
+        notify.ltype = request.type;
         notify.content = request.content;
         notify.title = request.title;
 
-        NotifyType ntype;
+        LandingType ntype;
         if (request.type == ntype.WAP) {
             notify.url = request.url;
         }
@@ -681,99 +704,37 @@ namespace tis {
         if (request.type == ntype.COMMUNITY_DETAIL) {
             notify.tid = request.tid;
         }
-        //PushClient push_client;
 
-        if (industry_id == 0) {
+        if (is_broadcast == 0) {
             BroadcastRequest broadcast_request;
             broadcast_request.notify = notify;
             broadcast_request.send_time = request.send_time;
             broadcast_request.push_task_id = request.push_task_id;
-            string result;
             
-            _push_client->broadcast(result, broadcast_request);
+            _push_client->broadcast(broadcast_request);
         }
-        else {
-            int limit = 5000;
-            int offset = 0;
-            while (1) {
-                vector<long> uid_list;
-                _mysql_dao->get_industry_users_by_limit(industry_id, uid_list, offset, limit);
-                LOG(INFO) << "uid_list size:" << uid_list.size() << endl;
+        else {//采用tag推送
+            ConditionPushRequest condition_request;
+            condition_request.notify = notify;
+            condition_request.device_type = request.device_type;
+            condition_request.city = request.city;
+            condition_request.school = request.school;
+            condition_request.ukind_verify = request.ukind_verify;
+            condition_request.send_time = request.send_time;
+            condition_request.push_task_id = request.push_task_id;
 
-                vector<long>::iterator pos;
-                vector<string> android_device_list;
-                vector<string> ios_device_list;
-
-                BatchNotifyRequest android_batch_request;
-                BatchNotifyRequest ios_batch_request;
-                android_batch_request.device_type = 1;
-                ios_batch_request.device_type = 2;
-                android_batch_request.notify = notify;
-                ios_batch_request.notify = notify;
-
-                for(pos = uid_list.begin(); pos != uid_list.end(); pos++) {
-                    if(!can_push(*pos, "sys_notify")) {
-                       continue;
-                    }
-                    vector<int32_t> device_type;
-                    vector<string> xg_device_token;
-                    int ret = _mysql_dao->get_device_info(((int32_t)*pos), device_type, xg_device_token);
-                    if (ret == 0) {
-                        for (size_t i = 0; i < xg_device_token.size(); i++) {
-                            int32_t dtype = device_type.at(i);
-                            if (dtype == 1) {
-                                android_device_list.push_back(xg_device_token.at(i));
-                            }
-                            if (dtype == 2) {
-                                ios_device_list.push_back(xg_device_token.at(i));
-                            }
-                        }
-                    }
-
-                    if (android_device_list.size() > 0 && android_device_list.size() % FLAGS_batch_push_num == 0) {
-                        android_batch_request.device_id_list = android_device_list;
-                        _push_client->batch_notify(android_batch_request);
-                        android_device_list.clear();
-                    }
-                
-                    if (ios_device_list.size() > 0 && ios_device_list.size() % FLAGS_batch_push_num == 0) {
-                        ios_batch_request.device_id_list = ios_device_list;
-                        _push_client->batch_notify(ios_batch_request);
-                        ios_device_list.clear();
-                    }
-
-                }
-
-                if (android_device_list.size() > 0) {
-                    LOG(INFO) << "737" << "android size:" << android_device_list.size() << endl;
-                    android_batch_request.device_id_list = android_device_list;
-                    _push_client->batch_notify(android_batch_request);
-                }
-
-                if (ios_device_list.size() > 0) {
-                    LOG(INFO) << "743" << "ios size:" << ios_device_list.size() << endl;
-                    android_batch_request.device_id_list = android_device_list;
-                    ios_batch_request.device_id_list = ios_device_list;
-                    _push_client->batch_notify(ios_batch_request);
-                }
-
-                if (uid_list.size() < limit) {
-                    break;
-                }
-                offset += limit;
-                uid_list.clear();
-            }
+            _push_client->condition_push(condition_request);
         }
 
         timeval time_end;
         gettimeofday(&time_end, NULL);
-        LOG(INFO) << "[notice_notify]" \
+        /*LOG(INFO) << "[notice_notify]" \
             << " industry_id=" << request.industry_id \
             << " type=" << request.type \
             << " title=" << request.title \
             << " content=" << request.content \
             << " cost=" << TIMEDIFF(time_start, time_end) \
-            << endl;
+            << endl;*///TODO 后续整理日志
     }
 
 }

@@ -38,15 +38,16 @@ class MessageServerHandler : virtual public MessageServerIf {
   void clear_red_by_uid(
           const int32_t uid, 
           const int32_t mType, 
-          const int32_t num);
+          const int32_t num,
+          const int32_t from_uid);
 
   //有新帖消息
   void new_tweet_notify(const NewTweetNotifyRequest& request);
 
   //mis通知消息
-  void notice_notify(const NoticeRequest& request);
+  void mis_notify(const MisRequest& request);
 
-  void new_friend_notify(const NewFriendRequest& request);
+  //void new_friend_notify(const NewFriendRequest& request);
 
   void update_config(const int32_t key, const std::string& value);
 
@@ -67,20 +68,13 @@ class MessageServerHandler : virtual public MessageServerIf {
   bool can_push(int32_t uid, string config_type);
 
   //关注和私信通知蓝鲸小秘书
-  int admin_notify(int16_t type, int16_t flow,
+  /*int admin_notify(int16_t type, int16_t flow,
           int32_t from_uid, int32_t to_uid, 
-          int32_t ctime, int32_t mid = 0);
+          int32_t ctime, int32_t mid = 0);*/
 
   //检查最近是否有点赞或关注,避免频繁推消息
   bool check_action_frequent(int32_t from_uid,
           int type, int32_t to_uid, int32_t content_id);
-  
- /*private:
-  //DBConnector *db_conn;
-  RedisProxy *_redis_proxy;//端口为8888,做db使用,ms可以读写
-  RedisProxy *_catch_redis_proxy;//端口为8889,获取用户名称,过期时间等信息,ms只读
-  MysqlDAO *_mysql_dao;
-  PushClient *_push_client;*/
 };
 
 }

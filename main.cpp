@@ -8,7 +8,7 @@
 
 #include "ms_flag.h"
 #include "Handler/message_server_handler.h"
-#include "Handler/red_remind.h"
+//#include "Handler/red_remind.h"
 #include "Util/constant.h"
 
 namespace tis {
@@ -41,7 +41,7 @@ global_data_t g_data;
 
 using namespace tis;
 
-void* start_bottom_remind(void *arg){
+/*void* start_bottom_remind(void *arg){
     RedRemind remind;
     if (0 == remind.init())
         remind.red_remind_bottom();
@@ -53,13 +53,13 @@ void* start_msg_remind(void *arg) {
     if (0 == remind.init())
         remind.red_remind_msg();
     return NULL;
-}
+}*/
 
 void handle_signal(int sig) {
     LOG(INFO) << "why kill me!" << endl;
     g_data.g_ms_server.stop();
-    pthread_cancel(g_data.g_pid);
-    pthread_cancel(g_data.g_pid2);
+    //pthread_cancel(g_data.g_pid);
+    //pthread_cancel(g_data.g_pid2);
     LOG(INFO) << "kill over!" << endl;
     exit(0);
 }
@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
     g_data.g_shared_user_info.init();
     g_data.g_shared_push_config.init();
     //pthread_t pid;
-    pthread_create(&(g_data.g_pid), NULL, start_bottom_remind, NULL);
-    pthread_create(&(g_data.g_pid2), NULL, start_msg_remind, NULL);
+    //pthread_create(&(g_data.g_pid), NULL, start_bottom_remind, NULL);
+    //pthread_create(&(g_data.g_pid2), NULL, start_msg_remind, NULL);
 
     if (0 != g_data.g_ms_server.init()) {
         LOG(WARNING) << "init ms server wrong!" << endl;
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    pthread_join(g_data.g_pid, NULL);
-    pthread_join(g_data.g_pid2, NULL);
+    //pthread_join(g_data.g_pid, NULL);
+    //pthread_join(g_data.g_pid2, NULL);
     return 0;
 }

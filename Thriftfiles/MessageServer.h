@@ -18,10 +18,9 @@ class MessageServerIf {
   virtual void send_system_msg(const SystemMessage& sMsg) = 0;
   virtual void set_read(const int32_t sMsgId) = 0;
   virtual void set_delete(const int32_t sMsgId) = 0;
-  virtual void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num) = 0;
+  virtual void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid) = 0;
   virtual void new_tweet_notify(const NewTweetNotifyRequest& request) = 0;
-  virtual void notice_notify(const NoticeRequest& request) = 0;
-  virtual void new_friend_notify(const NewFriendRequest& request) = 0;
+  virtual void mis_notify(const MisRequest& request) = 0;
   virtual void update_config(const int32_t key, const std::string& value) = 0;
   virtual int32_t get_num(const int32_t uid, const int32_t queue_type) = 0;
 };
@@ -62,16 +61,13 @@ class MessageServerNull : virtual public MessageServerIf {
   void set_delete(const int32_t /* sMsgId */) {
     return;
   }
-  void clear_red_by_uid(const int32_t /* uid */, const int32_t /* mType */, const int32_t /* num */) {
+  void clear_red_by_uid(const int32_t /* uid */, const int32_t /* mType */, const int32_t /* num */, const int32_t /* from_uid */) {
     return;
   }
   void new_tweet_notify(const NewTweetNotifyRequest& /* request */) {
     return;
   }
-  void notice_notify(const NoticeRequest& /* request */) {
-    return;
-  }
-  void new_friend_notify(const NewFriendRequest& /* request */) {
+  void mis_notify(const MisRequest& /* request */) {
     return;
   }
   void update_config(const int32_t /* key */, const std::string& /* value */) {
@@ -390,27 +386,29 @@ class MessageServer_set_delete_presult {
 };
 
 typedef struct _MessageServer_clear_red_by_uid_args__isset {
-  _MessageServer_clear_red_by_uid_args__isset() : uid(false), mType(false), num(true) {}
+  _MessageServer_clear_red_by_uid_args__isset() : uid(false), mType(false), num(true), from_uid(true) {}
   bool uid :1;
   bool mType :1;
   bool num :1;
+  bool from_uid :1;
 } _MessageServer_clear_red_by_uid_args__isset;
 
 class MessageServer_clear_red_by_uid_args {
  public:
 
-  static const char* ascii_fingerprint; // = "6435B39C87AB0E30F30BEDEFD7328C0D";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x35,0xB3,0x9C,0x87,0xAB,0x0E,0x30,0xF3,0x0B,0xED,0xEF,0xD7,0x32,0x8C,0x0D};
+  static const char* ascii_fingerprint; // = "154BB42C2FFD70F8B3993568C50C5613";
+  static const uint8_t binary_fingerprint[16]; // = {0x15,0x4B,0xB4,0x2C,0x2F,0xFD,0x70,0xF8,0xB3,0x99,0x35,0x68,0xC5,0x0C,0x56,0x13};
 
   MessageServer_clear_red_by_uid_args(const MessageServer_clear_red_by_uid_args&);
   MessageServer_clear_red_by_uid_args& operator=(const MessageServer_clear_red_by_uid_args&);
-  MessageServer_clear_red_by_uid_args() : uid(0), mType(0), num(0) {
+  MessageServer_clear_red_by_uid_args() : uid(0), mType(0), num(0), from_uid(0) {
   }
 
   virtual ~MessageServer_clear_red_by_uid_args() throw();
   int32_t uid;
   int32_t mType;
   int32_t num;
+  int32_t from_uid;
 
   _MessageServer_clear_red_by_uid_args__isset __isset;
 
@@ -420,6 +418,8 @@ class MessageServer_clear_red_by_uid_args {
 
   void __set_num(const int32_t val);
 
+  void __set_from_uid(const int32_t val);
+
   bool operator == (const MessageServer_clear_red_by_uid_args & rhs) const
   {
     if (!(uid == rhs.uid))
@@ -427,6 +427,8 @@ class MessageServer_clear_red_by_uid_args {
     if (!(mType == rhs.mType))
       return false;
     if (!(num == rhs.num))
+      return false;
+    if (!(from_uid == rhs.from_uid))
       return false;
     return true;
   }
@@ -446,14 +448,15 @@ class MessageServer_clear_red_by_uid_args {
 class MessageServer_clear_red_by_uid_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "6435B39C87AB0E30F30BEDEFD7328C0D";
-  static const uint8_t binary_fingerprint[16]; // = {0x64,0x35,0xB3,0x9C,0x87,0xAB,0x0E,0x30,0xF3,0x0B,0xED,0xEF,0xD7,0x32,0x8C,0x0D};
+  static const char* ascii_fingerprint; // = "154BB42C2FFD70F8B3993568C50C5613";
+  static const uint8_t binary_fingerprint[16]; // = {0x15,0x4B,0xB4,0x2C,0x2F,0xFD,0x70,0xF8,0xB3,0x99,0x35,0x68,0xC5,0x0C,0x56,0x13};
 
 
   virtual ~MessageServer_clear_red_by_uid_pargs() throw();
   const int32_t* uid;
   const int32_t* mType;
   const int32_t* num;
+  const int32_t* from_uid;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
@@ -607,208 +610,106 @@ class MessageServer_new_tweet_notify_presult {
   friend std::ostream& operator<<(std::ostream& out, const MessageServer_new_tweet_notify_presult& obj);
 };
 
-typedef struct _MessageServer_notice_notify_args__isset {
-  _MessageServer_notice_notify_args__isset() : request(false) {}
+typedef struct _MessageServer_mis_notify_args__isset {
+  _MessageServer_mis_notify_args__isset() : request(false) {}
   bool request :1;
-} _MessageServer_notice_notify_args__isset;
+} _MessageServer_mis_notify_args__isset;
 
-class MessageServer_notice_notify_args {
+class MessageServer_mis_notify_args {
  public:
 
-  static const char* ascii_fingerprint; // = "BA3FBAAB67211CC78222654CCC240866";
-  static const uint8_t binary_fingerprint[16]; // = {0xBA,0x3F,0xBA,0xAB,0x67,0x21,0x1C,0xC7,0x82,0x22,0x65,0x4C,0xCC,0x24,0x08,0x66};
+  static const char* ascii_fingerprint; // = "0A7672BB81A7880DD29D303ACA1617EA";
+  static const uint8_t binary_fingerprint[16]; // = {0x0A,0x76,0x72,0xBB,0x81,0xA7,0x88,0x0D,0xD2,0x9D,0x30,0x3A,0xCA,0x16,0x17,0xEA};
 
-  MessageServer_notice_notify_args(const MessageServer_notice_notify_args&);
-  MessageServer_notice_notify_args& operator=(const MessageServer_notice_notify_args&);
-  MessageServer_notice_notify_args() {
+  MessageServer_mis_notify_args(const MessageServer_mis_notify_args&);
+  MessageServer_mis_notify_args& operator=(const MessageServer_mis_notify_args&);
+  MessageServer_mis_notify_args() {
   }
 
-  virtual ~MessageServer_notice_notify_args() throw();
-  NoticeRequest request;
+  virtual ~MessageServer_mis_notify_args() throw();
+  MisRequest request;
 
-  _MessageServer_notice_notify_args__isset __isset;
+  _MessageServer_mis_notify_args__isset __isset;
 
-  void __set_request(const NoticeRequest& val);
+  void __set_request(const MisRequest& val);
 
-  bool operator == (const MessageServer_notice_notify_args & rhs) const
+  bool operator == (const MessageServer_mis_notify_args & rhs) const
   {
     if (!(request == rhs.request))
       return false;
     return true;
   }
-  bool operator != (const MessageServer_notice_notify_args &rhs) const {
+  bool operator != (const MessageServer_mis_notify_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const MessageServer_notice_notify_args & ) const;
+  bool operator < (const MessageServer_mis_notify_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_notice_notify_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const MessageServer_mis_notify_args& obj);
 };
 
 
-class MessageServer_notice_notify_pargs {
+class MessageServer_mis_notify_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "BA3FBAAB67211CC78222654CCC240866";
-  static const uint8_t binary_fingerprint[16]; // = {0xBA,0x3F,0xBA,0xAB,0x67,0x21,0x1C,0xC7,0x82,0x22,0x65,0x4C,0xCC,0x24,0x08,0x66};
+  static const char* ascii_fingerprint; // = "0A7672BB81A7880DD29D303ACA1617EA";
+  static const uint8_t binary_fingerprint[16]; // = {0x0A,0x76,0x72,0xBB,0x81,0xA7,0x88,0x0D,0xD2,0x9D,0x30,0x3A,0xCA,0x16,0x17,0xEA};
 
 
-  virtual ~MessageServer_notice_notify_pargs() throw();
-  const NoticeRequest* request;
+  virtual ~MessageServer_mis_notify_pargs() throw();
+  const MisRequest* request;
 
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_notice_notify_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const MessageServer_mis_notify_pargs& obj);
 };
 
 
-class MessageServer_notice_notify_result {
+class MessageServer_mis_notify_result {
  public:
 
   static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
   static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
-  MessageServer_notice_notify_result(const MessageServer_notice_notify_result&);
-  MessageServer_notice_notify_result& operator=(const MessageServer_notice_notify_result&);
-  MessageServer_notice_notify_result() {
+  MessageServer_mis_notify_result(const MessageServer_mis_notify_result&);
+  MessageServer_mis_notify_result& operator=(const MessageServer_mis_notify_result&);
+  MessageServer_mis_notify_result() {
   }
 
-  virtual ~MessageServer_notice_notify_result() throw();
+  virtual ~MessageServer_mis_notify_result() throw();
 
-  bool operator == (const MessageServer_notice_notify_result & /* rhs */) const
+  bool operator == (const MessageServer_mis_notify_result & /* rhs */) const
   {
     return true;
   }
-  bool operator != (const MessageServer_notice_notify_result &rhs) const {
+  bool operator != (const MessageServer_mis_notify_result &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const MessageServer_notice_notify_result & ) const;
+  bool operator < (const MessageServer_mis_notify_result & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_notice_notify_result& obj);
+  friend std::ostream& operator<<(std::ostream& out, const MessageServer_mis_notify_result& obj);
 };
 
 
-class MessageServer_notice_notify_presult {
+class MessageServer_mis_notify_presult {
  public:
 
   static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
   static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
 
-  virtual ~MessageServer_notice_notify_presult() throw();
+  virtual ~MessageServer_mis_notify_presult() throw();
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_notice_notify_presult& obj);
-};
-
-typedef struct _MessageServer_new_friend_notify_args__isset {
-  _MessageServer_new_friend_notify_args__isset() : request(false) {}
-  bool request :1;
-} _MessageServer_new_friend_notify_args__isset;
-
-class MessageServer_new_friend_notify_args {
- public:
-
-  static const char* ascii_fingerprint; // = "F545C0FACB8D616D4F0D153229B118DE";
-  static const uint8_t binary_fingerprint[16]; // = {0xF5,0x45,0xC0,0xFA,0xCB,0x8D,0x61,0x6D,0x4F,0x0D,0x15,0x32,0x29,0xB1,0x18,0xDE};
-
-  MessageServer_new_friend_notify_args(const MessageServer_new_friend_notify_args&);
-  MessageServer_new_friend_notify_args& operator=(const MessageServer_new_friend_notify_args&);
-  MessageServer_new_friend_notify_args() {
-  }
-
-  virtual ~MessageServer_new_friend_notify_args() throw();
-  NewFriendRequest request;
-
-  _MessageServer_new_friend_notify_args__isset __isset;
-
-  void __set_request(const NewFriendRequest& val);
-
-  bool operator == (const MessageServer_new_friend_notify_args & rhs) const
-  {
-    if (!(request == rhs.request))
-      return false;
-    return true;
-  }
-  bool operator != (const MessageServer_new_friend_notify_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const MessageServer_new_friend_notify_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_new_friend_notify_args& obj);
-};
-
-
-class MessageServer_new_friend_notify_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "F545C0FACB8D616D4F0D153229B118DE";
-  static const uint8_t binary_fingerprint[16]; // = {0xF5,0x45,0xC0,0xFA,0xCB,0x8D,0x61,0x6D,0x4F,0x0D,0x15,0x32,0x29,0xB1,0x18,0xDE};
-
-
-  virtual ~MessageServer_new_friend_notify_pargs() throw();
-  const NewFriendRequest* request;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_new_friend_notify_pargs& obj);
-};
-
-
-class MessageServer_new_friend_notify_result {
- public:
-
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
-
-  MessageServer_new_friend_notify_result(const MessageServer_new_friend_notify_result&);
-  MessageServer_new_friend_notify_result& operator=(const MessageServer_new_friend_notify_result&);
-  MessageServer_new_friend_notify_result() {
-  }
-
-  virtual ~MessageServer_new_friend_notify_result() throw();
-
-  bool operator == (const MessageServer_new_friend_notify_result & /* rhs */) const
-  {
-    return true;
-  }
-  bool operator != (const MessageServer_new_friend_notify_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const MessageServer_new_friend_notify_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_new_friend_notify_result& obj);
-};
-
-
-class MessageServer_new_friend_notify_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
-
-
-  virtual ~MessageServer_new_friend_notify_presult() throw();
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const MessageServer_new_friend_notify_presult& obj);
+  friend std::ostream& operator<<(std::ostream& out, const MessageServer_mis_notify_presult& obj);
 };
 
 typedef struct _MessageServer_update_config_args__isset {
@@ -1081,18 +982,15 @@ class MessageServerClient : virtual public MessageServerIf {
   void set_delete(const int32_t sMsgId);
   void send_set_delete(const int32_t sMsgId);
   void recv_set_delete();
-  void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num);
-  void send_clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num);
+  void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid);
+  void send_clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid);
   void recv_clear_red_by_uid();
   void new_tweet_notify(const NewTweetNotifyRequest& request);
   void send_new_tweet_notify(const NewTweetNotifyRequest& request);
   void recv_new_tweet_notify();
-  void notice_notify(const NoticeRequest& request);
-  void send_notice_notify(const NoticeRequest& request);
-  void recv_notice_notify();
-  void new_friend_notify(const NewFriendRequest& request);
-  void send_new_friend_notify(const NewFriendRequest& request);
-  void recv_new_friend_notify();
+  void mis_notify(const MisRequest& request);
+  void send_mis_notify(const MisRequest& request);
+  void recv_mis_notify();
   void update_config(const int32_t key, const std::string& value);
   void send_update_config(const int32_t key, const std::string& value);
   void recv_update_config();
@@ -1119,8 +1017,7 @@ class MessageServerProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_set_delete(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_clear_red_by_uid(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_new_tweet_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_notice_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_new_friend_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_mis_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_update_config(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_get_num(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
@@ -1131,8 +1028,7 @@ class MessageServerProcessor : public ::apache::thrift::TDispatchProcessor {
     processMap_["set_delete"] = &MessageServerProcessor::process_set_delete;
     processMap_["clear_red_by_uid"] = &MessageServerProcessor::process_clear_red_by_uid;
     processMap_["new_tweet_notify"] = &MessageServerProcessor::process_new_tweet_notify;
-    processMap_["notice_notify"] = &MessageServerProcessor::process_notice_notify;
-    processMap_["new_friend_notify"] = &MessageServerProcessor::process_new_friend_notify;
+    processMap_["mis_notify"] = &MessageServerProcessor::process_mis_notify;
     processMap_["update_config"] = &MessageServerProcessor::process_update_config;
     processMap_["get_num"] = &MessageServerProcessor::process_get_num;
   }
@@ -1190,13 +1086,13 @@ class MessageServerMultiface : virtual public MessageServerIf {
     ifaces_[i]->set_delete(sMsgId);
   }
 
-  void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num) {
+  void clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->clear_red_by_uid(uid, mType, num);
+      ifaces_[i]->clear_red_by_uid(uid, mType, num, from_uid);
     }
-    ifaces_[i]->clear_red_by_uid(uid, mType, num);
+    ifaces_[i]->clear_red_by_uid(uid, mType, num, from_uid);
   }
 
   void new_tweet_notify(const NewTweetNotifyRequest& request) {
@@ -1208,22 +1104,13 @@ class MessageServerMultiface : virtual public MessageServerIf {
     ifaces_[i]->new_tweet_notify(request);
   }
 
-  void notice_notify(const NoticeRequest& request) {
+  void mis_notify(const MisRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->notice_notify(request);
+      ifaces_[i]->mis_notify(request);
     }
-    ifaces_[i]->notice_notify(request);
-  }
-
-  void new_friend_notify(const NewFriendRequest& request) {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->new_friend_notify(request);
-    }
-    ifaces_[i]->new_friend_notify(request);
+    ifaces_[i]->mis_notify(request);
   }
 
   void update_config(const int32_t key, const std::string& value) {

@@ -36,7 +36,7 @@ MsServer::~MsServer() {
 
 int MsServer::init() {
     //初始化日志
-    FLAGS_logbuflevel = -1;
+    FLAGS_logbuflevel = 5;
     google::InitGoogleLogging("ms");
 
     //全局初始化mysql_proxy

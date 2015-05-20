@@ -45,15 +45,19 @@ struct NewTweetNotifyRequest {
 /**
  * @brief mis站外通知
  */
-struct NoticeRequest {
-    1: required string title,   //通知标题
+struct MisRequest {
+    1: required string title='',   //通知标题
     2: required string content, //通知内容
-    3: required i32 industry_id,//行业id
     4: required i32 type, //推送类型,1:app首页,2:指定的wap页面,3:帖子详情页,4:新的好友列表页,5:私信详情页,6:跳转到系统通知列表页
-    5: optional i32 tid,        //与此通知相关的帖子id,可选
-    6: optional string url, //与此通知相关的wap url
-    7: optional i32 send_time, //推送时间
-    8: optional i32 push_task_id, //推送任务id
+    5: required i32 tid=0,        //与此通知相关的帖子id,可选
+    6: required string url='', //与此通知相关的wap url
+    7: required i32 send_time=0, //推送时间
+    8: required i32 push_task_id=0, //推送任务id
+    9: required i32 device_type=0,//0:全平台 1:android 2:ios
+    10: required string city,//城市名称，用逗号分隔，如果是全部城市，请只传字符串"all_city"
+    11: required string school, //学校名称，用逗号分隔,如果是全部学校，请只传字符串"all_school"
+    12: required string ukind_verify, //取两个值，verify，unverify
+    13: required i32 is_broadcast,//是否是广播，1是广播，0不是。广播表示给所有设备推送
 }
 
 struct NewFriendRequest {
@@ -76,17 +80,18 @@ service MessageServer {
      * @param uid, 用户id
      *        mType, 用户点击小红点的区域, 1:首页, 2:贴子区, 3:我的消息
      *        num, 用户点击时显示的数字, 如果只显示小红点,则可以不传 
+     *        from_uid, 来自谁的私信小红点取消,对方的uid
      */
-    void clear_red_by_uid(1:i32 uid, 2:i32 mType, 3:i32 num = 0),
+    void clear_red_by_uid(1:i32 uid, 2:i32 mType, 3:i32 num = 0, 4:i32 from_uid=0),
 
     //新帖发布消息
     void new_tweet_notify(1:NewTweetNotifyRequest request),
 
     //mis通知消息
-    void notice_notify(1:NoticeRequest request),
+    void mis_notify(1:MisRequest request),
 
     //好友推荐通知
-    void new_friend_notify(1:NewFriendRequest request),
+    //void new_friend_notify(1:NewFriendRequest request),
 
     void update_config(1:i32 key, 2:string value),
 

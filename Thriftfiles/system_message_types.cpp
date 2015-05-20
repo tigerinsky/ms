@@ -393,50 +393,62 @@ std::ostream& operator<<(std::ostream& out, const NewTweetNotifyRequest& obj) {
 }
 
 
-NoticeRequest::~NoticeRequest() throw() {
+MisRequest::~MisRequest() throw() {
 }
 
 
-void NoticeRequest::__set_title(const std::string& val) {
+void MisRequest::__set_title(const std::string& val) {
   this->title = val;
 }
 
-void NoticeRequest::__set_content(const std::string& val) {
+void MisRequest::__set_content(const std::string& val) {
   this->content = val;
 }
 
-void NoticeRequest::__set_industry_id(const int32_t val) {
-  this->industry_id = val;
-}
-
-void NoticeRequest::__set_type(const int32_t val) {
+void MisRequest::__set_type(const int32_t val) {
   this->type = val;
 }
 
-void NoticeRequest::__set_tid(const int32_t val) {
+void MisRequest::__set_tid(const int32_t val) {
   this->tid = val;
-__isset.tid = true;
 }
 
-void NoticeRequest::__set_url(const std::string& val) {
+void MisRequest::__set_url(const std::string& val) {
   this->url = val;
-__isset.url = true;
 }
 
-void NoticeRequest::__set_send_time(const int32_t val) {
+void MisRequest::__set_send_time(const int32_t val) {
   this->send_time = val;
-__isset.send_time = true;
 }
 
-void NoticeRequest::__set_push_task_id(const int32_t val) {
+void MisRequest::__set_push_task_id(const int32_t val) {
   this->push_task_id = val;
-__isset.push_task_id = true;
 }
 
-const char* NoticeRequest::ascii_fingerprint = "766EF510B2AF085613E6B0E27DEB7D81";
-const uint8_t NoticeRequest::binary_fingerprint[16] = {0x76,0x6E,0xF5,0x10,0xB2,0xAF,0x08,0x56,0x13,0xE6,0xB0,0xE2,0x7D,0xEB,0x7D,0x81};
+void MisRequest::__set_device_type(const int32_t val) {
+  this->device_type = val;
+}
 
-uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
+void MisRequest::__set_city(const std::string& val) {
+  this->city = val;
+}
+
+void MisRequest::__set_school(const std::string& val) {
+  this->school = val;
+}
+
+void MisRequest::__set_ukind_verify(const std::string& val) {
+  this->ukind_verify = val;
+}
+
+void MisRequest::__set_is_broadcast(const int32_t val) {
+  this->is_broadcast = val;
+}
+
+const char* MisRequest::ascii_fingerprint = "4FDE5F81A1EEA89BF972DEC3AC17B304";
+const uint8_t MisRequest::binary_fingerprint[16] = {0x4F,0xDE,0x5F,0x81,0xA1,0xEE,0xA8,0x9B,0xF9,0x72,0xDE,0xC3,0xAC,0x17,0xB3,0x04};
+
+uint32_t MisRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -449,8 +461,16 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   bool isset_title = false;
   bool isset_content = false;
-  bool isset_industry_id = false;
   bool isset_type = false;
+  bool isset_tid = false;
+  bool isset_url = false;
+  bool isset_send_time = false;
+  bool isset_push_task_id = false;
+  bool isset_device_type = false;
+  bool isset_city = false;
+  bool isset_school = false;
+  bool isset_ukind_verify = false;
+  bool isset_is_broadcast = false;
 
   while (true)
   {
@@ -476,14 +496,6 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
           xfer += iprot->skip(ftype);
         }
         break;
-      case 3:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->industry_id);
-          isset_industry_id = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
       case 4:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->type);
@@ -495,7 +507,7 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->tid);
-          this->__isset.tid = true;
+          isset_tid = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -503,7 +515,7 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->url);
-          this->__isset.url = true;
+          isset_url = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -511,7 +523,7 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 7:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->send_time);
-          this->__isset.send_time = true;
+          isset_send_time = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -519,7 +531,47 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
       case 8:
         if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->push_task_id);
-          this->__isset.push_task_id = true;
+          isset_push_task_id = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 9:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->device_type);
+          isset_device_type = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 10:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->city);
+          isset_city = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 11:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->school);
+          isset_school = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 12:
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->ukind_verify);
+          isset_ukind_verify = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      case 13:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->is_broadcast);
+          isset_is_broadcast = true;
         } else {
           xfer += iprot->skip(ftype);
         }
@@ -537,17 +589,33 @@ uint32_t NoticeRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_content)
     throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset_industry_id)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset_type)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_tid)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_url)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_send_time)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_push_task_id)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_device_type)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_city)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_school)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_ukind_verify)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  if (!isset_is_broadcast)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   return xfer;
 }
 
-uint32_t NoticeRequest::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MisRequest::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("NoticeRequest");
+  xfer += oprot->writeStructBegin("MisRequest");
 
   xfer += oprot->writeFieldBegin("title", ::apache::thrift::protocol::T_STRING, 1);
   xfer += oprot->writeString(this->title);
@@ -557,87 +625,112 @@ uint32_t NoticeRequest::write(::apache::thrift::protocol::TProtocol* oprot) cons
   xfer += oprot->writeString(this->content);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("industry_id", ::apache::thrift::protocol::T_I32, 3);
-  xfer += oprot->writeI32(this->industry_id);
-  xfer += oprot->writeFieldEnd();
-
   xfer += oprot->writeFieldBegin("type", ::apache::thrift::protocol::T_I32, 4);
   xfer += oprot->writeI32(this->type);
   xfer += oprot->writeFieldEnd();
 
-  if (this->__isset.tid) {
-    xfer += oprot->writeFieldBegin("tid", ::apache::thrift::protocol::T_I32, 5);
-    xfer += oprot->writeI32(this->tid);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.url) {
-    xfer += oprot->writeFieldBegin("url", ::apache::thrift::protocol::T_STRING, 6);
-    xfer += oprot->writeString(this->url);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.send_time) {
-    xfer += oprot->writeFieldBegin("send_time", ::apache::thrift::protocol::T_I32, 7);
-    xfer += oprot->writeI32(this->send_time);
-    xfer += oprot->writeFieldEnd();
-  }
-  if (this->__isset.push_task_id) {
-    xfer += oprot->writeFieldBegin("push_task_id", ::apache::thrift::protocol::T_I32, 8);
-    xfer += oprot->writeI32(this->push_task_id);
-    xfer += oprot->writeFieldEnd();
-  }
+  xfer += oprot->writeFieldBegin("tid", ::apache::thrift::protocol::T_I32, 5);
+  xfer += oprot->writeI32(this->tid);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("url", ::apache::thrift::protocol::T_STRING, 6);
+  xfer += oprot->writeString(this->url);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("send_time", ::apache::thrift::protocol::T_I32, 7);
+  xfer += oprot->writeI32(this->send_time);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("push_task_id", ::apache::thrift::protocol::T_I32, 8);
+  xfer += oprot->writeI32(this->push_task_id);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("device_type", ::apache::thrift::protocol::T_I32, 9);
+  xfer += oprot->writeI32(this->device_type);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("city", ::apache::thrift::protocol::T_STRING, 10);
+  xfer += oprot->writeString(this->city);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("school", ::apache::thrift::protocol::T_STRING, 11);
+  xfer += oprot->writeString(this->school);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("ukind_verify", ::apache::thrift::protocol::T_STRING, 12);
+  xfer += oprot->writeString(this->ukind_verify);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("is_broadcast", ::apache::thrift::protocol::T_I32, 13);
+  xfer += oprot->writeI32(this->is_broadcast);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
   return xfer;
 }
 
-void swap(NoticeRequest &a, NoticeRequest &b) {
+void swap(MisRequest &a, MisRequest &b) {
   using ::std::swap;
   swap(a.title, b.title);
   swap(a.content, b.content);
-  swap(a.industry_id, b.industry_id);
   swap(a.type, b.type);
   swap(a.tid, b.tid);
   swap(a.url, b.url);
   swap(a.send_time, b.send_time);
   swap(a.push_task_id, b.push_task_id);
-  swap(a.__isset, b.__isset);
+  swap(a.device_type, b.device_type);
+  swap(a.city, b.city);
+  swap(a.school, b.school);
+  swap(a.ukind_verify, b.ukind_verify);
+  swap(a.is_broadcast, b.is_broadcast);
 }
 
-NoticeRequest::NoticeRequest(const NoticeRequest& other18) {
+MisRequest::MisRequest(const MisRequest& other18) {
   title = other18.title;
   content = other18.content;
-  industry_id = other18.industry_id;
   type = other18.type;
   tid = other18.tid;
   url = other18.url;
   send_time = other18.send_time;
   push_task_id = other18.push_task_id;
-  __isset = other18.__isset;
+  device_type = other18.device_type;
+  city = other18.city;
+  school = other18.school;
+  ukind_verify = other18.ukind_verify;
+  is_broadcast = other18.is_broadcast;
 }
-NoticeRequest& NoticeRequest::operator=(const NoticeRequest& other19) {
+MisRequest& MisRequest::operator=(const MisRequest& other19) {
   title = other19.title;
   content = other19.content;
-  industry_id = other19.industry_id;
   type = other19.type;
   tid = other19.tid;
   url = other19.url;
   send_time = other19.send_time;
   push_task_id = other19.push_task_id;
-  __isset = other19.__isset;
+  device_type = other19.device_type;
+  city = other19.city;
+  school = other19.school;
+  ukind_verify = other19.ukind_verify;
+  is_broadcast = other19.is_broadcast;
   return *this;
 }
-std::ostream& operator<<(std::ostream& out, const NoticeRequest& obj) {
+std::ostream& operator<<(std::ostream& out, const MisRequest& obj) {
   using apache::thrift::to_string;
-  out << "NoticeRequest(";
+  out << "MisRequest(";
   out << "title=" << to_string(obj.title);
   out << ", " << "content=" << to_string(obj.content);
-  out << ", " << "industry_id=" << to_string(obj.industry_id);
   out << ", " << "type=" << to_string(obj.type);
-  out << ", " << "tid="; (obj.__isset.tid ? (out << to_string(obj.tid)) : (out << "<null>"));
-  out << ", " << "url="; (obj.__isset.url ? (out << to_string(obj.url)) : (out << "<null>"));
-  out << ", " << "send_time="; (obj.__isset.send_time ? (out << to_string(obj.send_time)) : (out << "<null>"));
-  out << ", " << "push_task_id="; (obj.__isset.push_task_id ? (out << to_string(obj.push_task_id)) : (out << "<null>"));
+  out << ", " << "tid=" << to_string(obj.tid);
+  out << ", " << "url=" << to_string(obj.url);
+  out << ", " << "send_time=" << to_string(obj.send_time);
+  out << ", " << "push_task_id=" << to_string(obj.push_task_id);
+  out << ", " << "device_type=" << to_string(obj.device_type);
+  out << ", " << "city=" << to_string(obj.city);
+  out << ", " << "school=" << to_string(obj.school);
+  out << ", " << "ukind_verify=" << to_string(obj.ukind_verify);
+  out << ", " << "is_broadcast=" << to_string(obj.is_broadcast);
   out << ")";
   return out;
 }

@@ -49,7 +49,7 @@ class SystemMessage;
 
 class NewTweetNotifyRequest;
 
-class NoticeRequest;
+class MisRequest;
 
 class NewFriendRequest;
 
@@ -168,42 +168,35 @@ class NewTweetNotifyRequest {
 
 void swap(NewTweetNotifyRequest &a, NewTweetNotifyRequest &b);
 
-typedef struct _NoticeRequest__isset {
-  _NoticeRequest__isset() : tid(false), url(false), send_time(false), push_task_id(false) {}
-  bool tid :1;
-  bool url :1;
-  bool send_time :1;
-  bool push_task_id :1;
-} _NoticeRequest__isset;
 
-class NoticeRequest {
+class MisRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "766EF510B2AF085613E6B0E27DEB7D81";
-  static const uint8_t binary_fingerprint[16]; // = {0x76,0x6E,0xF5,0x10,0xB2,0xAF,0x08,0x56,0x13,0xE6,0xB0,0xE2,0x7D,0xEB,0x7D,0x81};
+  static const char* ascii_fingerprint; // = "4FDE5F81A1EEA89BF972DEC3AC17B304";
+  static const uint8_t binary_fingerprint[16]; // = {0x4F,0xDE,0x5F,0x81,0xA1,0xEE,0xA8,0x9B,0xF9,0x72,0xDE,0xC3,0xAC,0x17,0xB3,0x04};
 
-  NoticeRequest(const NoticeRequest&);
-  NoticeRequest& operator=(const NoticeRequest&);
-  NoticeRequest() : title(), content(), industry_id(0), type(0), tid(0), url(), send_time(0), push_task_id(0) {
+  MisRequest(const MisRequest&);
+  MisRequest& operator=(const MisRequest&);
+  MisRequest() : title(""), content(), type(0), tid(0), url(""), send_time(0), push_task_id(0), device_type(0), city(), school(), ukind_verify(), is_broadcast(0) {
   }
 
-  virtual ~NoticeRequest() throw();
+  virtual ~MisRequest() throw();
   std::string title;
   std::string content;
-  int32_t industry_id;
   int32_t type;
   int32_t tid;
   std::string url;
   int32_t send_time;
   int32_t push_task_id;
-
-  _NoticeRequest__isset __isset;
+  int32_t device_type;
+  std::string city;
+  std::string school;
+  std::string ukind_verify;
+  int32_t is_broadcast;
 
   void __set_title(const std::string& val);
 
   void __set_content(const std::string& val);
-
-  void __set_industry_id(const int32_t val);
 
   void __set_type(const int32_t val);
 
@@ -215,47 +208,57 @@ class NoticeRequest {
 
   void __set_push_task_id(const int32_t val);
 
-  bool operator == (const NoticeRequest & rhs) const
+  void __set_device_type(const int32_t val);
+
+  void __set_city(const std::string& val);
+
+  void __set_school(const std::string& val);
+
+  void __set_ukind_verify(const std::string& val);
+
+  void __set_is_broadcast(const int32_t val);
+
+  bool operator == (const MisRequest & rhs) const
   {
     if (!(title == rhs.title))
       return false;
     if (!(content == rhs.content))
       return false;
-    if (!(industry_id == rhs.industry_id))
-      return false;
     if (!(type == rhs.type))
       return false;
-    if (__isset.tid != rhs.__isset.tid)
+    if (!(tid == rhs.tid))
       return false;
-    else if (__isset.tid && !(tid == rhs.tid))
+    if (!(url == rhs.url))
       return false;
-    if (__isset.url != rhs.__isset.url)
+    if (!(send_time == rhs.send_time))
       return false;
-    else if (__isset.url && !(url == rhs.url))
+    if (!(push_task_id == rhs.push_task_id))
       return false;
-    if (__isset.send_time != rhs.__isset.send_time)
+    if (!(device_type == rhs.device_type))
       return false;
-    else if (__isset.send_time && !(send_time == rhs.send_time))
+    if (!(city == rhs.city))
       return false;
-    if (__isset.push_task_id != rhs.__isset.push_task_id)
+    if (!(school == rhs.school))
       return false;
-    else if (__isset.push_task_id && !(push_task_id == rhs.push_task_id))
+    if (!(ukind_verify == rhs.ukind_verify))
+      return false;
+    if (!(is_broadcast == rhs.is_broadcast))
       return false;
     return true;
   }
-  bool operator != (const NoticeRequest &rhs) const {
+  bool operator != (const MisRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const NoticeRequest & ) const;
+  bool operator < (const MisRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const NoticeRequest& obj);
+  friend std::ostream& operator<<(std::ostream& out, const MisRequest& obj);
 };
 
-void swap(NoticeRequest &a, NoticeRequest &b);
+void swap(MisRequest &a, MisRequest &b);
 
 
 class NewFriendRequest {

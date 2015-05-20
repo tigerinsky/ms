@@ -16,24 +16,20 @@ namespace tis {
 
 class PushClient {
     private:
-        //boost::shared_ptr<apache::thrift::transport::TTransport> socket;
-        //boost::shared_ptr<apache::thrift::transport::TTransport> transport;
-        //boost::shared_ptr<apache::thrift::protocol::TProtocol> protocol;
         boost::shared_ptr<TTransport> socket;
         boost::shared_ptr<TTransport> transport;
         boost::shared_ptr<TProtocol> protocol;
         PushServiceClient client;
 
     public:
-        PushClient(const char* host, const int port) :socket(new TSocket(host, port)), transport(new TFramedTransport(socket)), protocol(new TBinaryProtocol(transport)), client(protocol) {//TODO:host port从配置读
-            //transport->open();
+        PushClient(const char* host, const int port) :socket(new TSocket(host, port)), transport(new TFramedTransport(socket)), protocol(new TBinaryProtocol(transport)), client(protocol) {
         };
-        void ping();
-        void single_notify(const SingleNotifyRequest& request);
-        void batch_notify(const BatchNotifyRequest& request);
-        void admin_notify(const AdminNotifyRequest& request);
-        void batch_info(const BatchInfoRequest& request);
-        void broadcast(std::string& _return, const BroadcastRequest& request);
+        void ping(string& _return);
+        int32_t single_notify(const SingleNotifyRequest& request);
+        int32_t batch_notify(const BatchNotifyRequest& request);
+        int32_t broadcast(const BroadcastRequest& request);
+        int32_t optag(const TagRequest& request);
+        void condition_push(const ConditionPushRequest& request);
 
         ~PushClient() {
             if (NULL != transport) {

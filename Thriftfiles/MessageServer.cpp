@@ -522,6 +522,14 @@ uint32_t MessageServer_clear_red_by_uid_args::read(::apache::thrift::protocol::T
           xfer += iprot->skip(ftype);
         }
         break;
+      case 4:
+        if (ftype == ::apache::thrift::protocol::T_I32) {
+          xfer += iprot->readI32(this->from_uid);
+          this->__isset.from_uid = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
       default:
         xfer += iprot->skip(ftype);
         break;
@@ -551,6 +559,10 @@ uint32_t MessageServer_clear_red_by_uid_args::write(::apache::thrift::protocol::
   xfer += oprot->writeI32(this->num);
   xfer += oprot->writeFieldEnd();
 
+  xfer += oprot->writeFieldBegin("from_uid", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32(this->from_uid);
+  xfer += oprot->writeFieldEnd();
+
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
   oprot->decrementRecursionDepth();
@@ -577,6 +589,10 @@ uint32_t MessageServer_clear_red_by_uid_pargs::write(::apache::thrift::protocol:
 
   xfer += oprot->writeFieldBegin("num", ::apache::thrift::protocol::T_I32, 3);
   xfer += oprot->writeI32((*(this->num)));
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldBegin("from_uid", ::apache::thrift::protocol::T_I32, 4);
+  xfer += oprot->writeI32((*(this->from_uid)));
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldStop();
@@ -816,11 +832,11 @@ uint32_t MessageServer_new_tweet_notify_presult::read(::apache::thrift::protocol
 }
 
 
-MessageServer_notice_notify_args::~MessageServer_notice_notify_args() throw() {
+MessageServer_mis_notify_args::~MessageServer_mis_notify_args() throw() {
 }
 
 
-uint32_t MessageServer_notice_notify_args::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MessageServer_mis_notify_args::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -860,10 +876,10 @@ uint32_t MessageServer_notice_notify_args::read(::apache::thrift::protocol::TPro
   return xfer;
 }
 
-uint32_t MessageServer_notice_notify_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MessageServer_mis_notify_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("MessageServer_notice_notify_args");
+  xfer += oprot->writeStructBegin("MessageServer_mis_notify_args");
 
   xfer += oprot->writeFieldBegin("request", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += this->request.write(oprot);
@@ -876,14 +892,14 @@ uint32_t MessageServer_notice_notify_args::write(::apache::thrift::protocol::TPr
 }
 
 
-MessageServer_notice_notify_pargs::~MessageServer_notice_notify_pargs() throw() {
+MessageServer_mis_notify_pargs::~MessageServer_mis_notify_pargs() throw() {
 }
 
 
-uint32_t MessageServer_notice_notify_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MessageServer_mis_notify_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
   uint32_t xfer = 0;
   oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("MessageServer_notice_notify_pargs");
+  xfer += oprot->writeStructBegin("MessageServer_mis_notify_pargs");
 
   xfer += oprot->writeFieldBegin("request", ::apache::thrift::protocol::T_STRUCT, 1);
   xfer += (*(this->request)).write(oprot);
@@ -896,11 +912,11 @@ uint32_t MessageServer_notice_notify_pargs::write(::apache::thrift::protocol::TP
 }
 
 
-MessageServer_notice_notify_result::~MessageServer_notice_notify_result() throw() {
+MessageServer_mis_notify_result::~MessageServer_mis_notify_result() throw() {
 }
 
 
-uint32_t MessageServer_notice_notify_result::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MessageServer_mis_notify_result::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -927,11 +943,11 @@ uint32_t MessageServer_notice_notify_result::read(::apache::thrift::protocol::TP
   return xfer;
 }
 
-uint32_t MessageServer_notice_notify_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
+uint32_t MessageServer_mis_notify_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
 
   uint32_t xfer = 0;
 
-  xfer += oprot->writeStructBegin("MessageServer_notice_notify_result");
+  xfer += oprot->writeStructBegin("MessageServer_mis_notify_result");
 
   xfer += oprot->writeFieldStop();
   xfer += oprot->writeStructEnd();
@@ -939,166 +955,11 @@ uint32_t MessageServer_notice_notify_result::write(::apache::thrift::protocol::T
 }
 
 
-MessageServer_notice_notify_presult::~MessageServer_notice_notify_presult() throw() {
+MessageServer_mis_notify_presult::~MessageServer_mis_notify_presult() throw() {
 }
 
 
-uint32_t MessageServer_notice_notify_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-
-MessageServer_new_friend_notify_args::~MessageServer_new_friend_notify_args() throw() {
-}
-
-
-uint32_t MessageServer_new_friend_notify_args::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
-          xfer += this->request.read(iprot);
-          this->__isset.request = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      default:
-        xfer += iprot->skip(ftype);
-        break;
-    }
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t MessageServer_new_friend_notify_args::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("MessageServer_new_friend_notify_args");
-
-  xfer += oprot->writeFieldBegin("request", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += this->request.write(oprot);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-MessageServer_new_friend_notify_pargs::~MessageServer_new_friend_notify_pargs() throw() {
-}
-
-
-uint32_t MessageServer_new_friend_notify_pargs::write(::apache::thrift::protocol::TProtocol* oprot) const {
-  uint32_t xfer = 0;
-  oprot->incrementRecursionDepth();
-  xfer += oprot->writeStructBegin("MessageServer_new_friend_notify_pargs");
-
-  xfer += oprot->writeFieldBegin("request", ::apache::thrift::protocol::T_STRUCT, 1);
-  xfer += (*(this->request)).write(oprot);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  oprot->decrementRecursionDepth();
-  return xfer;
-}
-
-
-MessageServer_new_friend_notify_result::~MessageServer_new_friend_notify_result() throw() {
-}
-
-
-uint32_t MessageServer_new_friend_notify_result::read(::apache::thrift::protocol::TProtocol* iprot) {
-
-  uint32_t xfer = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TType ftype;
-  int16_t fid;
-
-  xfer += iprot->readStructBegin(fname);
-
-  using ::apache::thrift::protocol::TProtocolException;
-
-
-  while (true)
-  {
-    xfer += iprot->readFieldBegin(fname, ftype, fid);
-    if (ftype == ::apache::thrift::protocol::T_STOP) {
-      break;
-    }
-    xfer += iprot->skip(ftype);
-    xfer += iprot->readFieldEnd();
-  }
-
-  xfer += iprot->readStructEnd();
-
-  return xfer;
-}
-
-uint32_t MessageServer_new_friend_notify_result::write(::apache::thrift::protocol::TProtocol* oprot) const {
-
-  uint32_t xfer = 0;
-
-  xfer += oprot->writeStructBegin("MessageServer_new_friend_notify_result");
-
-  xfer += oprot->writeFieldStop();
-  xfer += oprot->writeStructEnd();
-  return xfer;
-}
-
-
-MessageServer_new_friend_notify_presult::~MessageServer_new_friend_notify_presult() throw() {
-}
-
-
-uint32_t MessageServer_new_friend_notify_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
+uint32_t MessageServer_mis_notify_presult::read(::apache::thrift::protocol::TProtocol* iprot) {
 
   uint32_t xfer = 0;
   std::string fname;
@@ -1657,13 +1518,13 @@ void MessageServerClient::recv_set_delete()
   return;
 }
 
-void MessageServerClient::clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num)
+void MessageServerClient::clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid)
 {
-  send_clear_red_by_uid(uid, mType, num);
+  send_clear_red_by_uid(uid, mType, num, from_uid);
   recv_clear_red_by_uid();
 }
 
-void MessageServerClient::send_clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num)
+void MessageServerClient::send_clear_red_by_uid(const int32_t uid, const int32_t mType, const int32_t num, const int32_t from_uid)
 {
   int32_t cseqid = 0;
   oprot_->writeMessageBegin("clear_red_by_uid", ::apache::thrift::protocol::T_CALL, cseqid);
@@ -1672,6 +1533,7 @@ void MessageServerClient::send_clear_red_by_uid(const int32_t uid, const int32_t
   args.uid = &uid;
   args.mType = &mType;
   args.num = &num;
+  args.from_uid = &from_uid;
   args.write(oprot_);
 
   oprot_->writeMessageEnd();
@@ -1765,18 +1627,18 @@ void MessageServerClient::recv_new_tweet_notify()
   return;
 }
 
-void MessageServerClient::notice_notify(const NoticeRequest& request)
+void MessageServerClient::mis_notify(const MisRequest& request)
 {
-  send_notice_notify(request);
-  recv_notice_notify();
+  send_mis_notify(request);
+  recv_mis_notify();
 }
 
-void MessageServerClient::send_notice_notify(const NoticeRequest& request)
+void MessageServerClient::send_mis_notify(const MisRequest& request)
 {
   int32_t cseqid = 0;
-  oprot_->writeMessageBegin("notice_notify", ::apache::thrift::protocol::T_CALL, cseqid);
+  oprot_->writeMessageBegin("mis_notify", ::apache::thrift::protocol::T_CALL, cseqid);
 
-  MessageServer_notice_notify_pargs args;
+  MessageServer_mis_notify_pargs args;
   args.request = &request;
   args.write(oprot_);
 
@@ -1785,7 +1647,7 @@ void MessageServerClient::send_notice_notify(const NoticeRequest& request)
   oprot_->getTransport()->flush();
 }
 
-void MessageServerClient::recv_notice_notify()
+void MessageServerClient::recv_mis_notify()
 {
 
   int32_t rseqid = 0;
@@ -1805,65 +1667,12 @@ void MessageServerClient::recv_notice_notify()
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  if (fname.compare("notice_notify") != 0) {
+  if (fname.compare("mis_notify") != 0) {
     iprot_->skip(::apache::thrift::protocol::T_STRUCT);
     iprot_->readMessageEnd();
     iprot_->getTransport()->readEnd();
   }
-  MessageServer_notice_notify_presult result;
-  result.read(iprot_);
-  iprot_->readMessageEnd();
-  iprot_->getTransport()->readEnd();
-
-  return;
-}
-
-void MessageServerClient::new_friend_notify(const NewFriendRequest& request)
-{
-  send_new_friend_notify(request);
-  recv_new_friend_notify();
-}
-
-void MessageServerClient::send_new_friend_notify(const NewFriendRequest& request)
-{
-  int32_t cseqid = 0;
-  oprot_->writeMessageBegin("new_friend_notify", ::apache::thrift::protocol::T_CALL, cseqid);
-
-  MessageServer_new_friend_notify_pargs args;
-  args.request = &request;
-  args.write(oprot_);
-
-  oprot_->writeMessageEnd();
-  oprot_->getTransport()->writeEnd();
-  oprot_->getTransport()->flush();
-}
-
-void MessageServerClient::recv_new_friend_notify()
-{
-
-  int32_t rseqid = 0;
-  std::string fname;
-  ::apache::thrift::protocol::TMessageType mtype;
-
-  iprot_->readMessageBegin(fname, mtype, rseqid);
-  if (mtype == ::apache::thrift::protocol::T_EXCEPTION) {
-    ::apache::thrift::TApplicationException x;
-    x.read(iprot_);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-    throw x;
-  }
-  if (mtype != ::apache::thrift::protocol::T_REPLY) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  if (fname.compare("new_friend_notify") != 0) {
-    iprot_->skip(::apache::thrift::protocol::T_STRUCT);
-    iprot_->readMessageEnd();
-    iprot_->getTransport()->readEnd();
-  }
-  MessageServer_new_friend_notify_presult result;
+  MessageServer_mis_notify_presult result;
   result.read(iprot_);
   iprot_->readMessageEnd();
   iprot_->getTransport()->readEnd();
@@ -2185,7 +1994,7 @@ void MessageServerProcessor::process_clear_red_by_uid(int32_t seqid, ::apache::t
 
   MessageServer_clear_red_by_uid_result result;
   try {
-    iface_->clear_red_by_uid(args.uid, args.mType, args.num);
+    iface_->clear_red_by_uid(args.uid, args.mType, args.num, args.from_uid);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
       this->eventHandler_->handlerError(ctx, "MessageServer.clear_red_by_uid");
@@ -2268,37 +2077,37 @@ void MessageServerProcessor::process_new_tweet_notify(int32_t seqid, ::apache::t
   }
 }
 
-void MessageServerProcessor::process_notice_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
+void MessageServerProcessor::process_mis_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
 {
   void* ctx = NULL;
   if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("MessageServer.notice_notify", callContext);
+    ctx = this->eventHandler_->getContext("MessageServer.mis_notify", callContext);
   }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MessageServer.notice_notify");
+  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MessageServer.mis_notify");
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "MessageServer.notice_notify");
+    this->eventHandler_->preRead(ctx, "MessageServer.mis_notify");
   }
 
-  MessageServer_notice_notify_args args;
+  MessageServer_mis_notify_args args;
   args.read(iprot);
   iprot->readMessageEnd();
   uint32_t bytes = iprot->getTransport()->readEnd();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "MessageServer.notice_notify", bytes);
+    this->eventHandler_->postRead(ctx, "MessageServer.mis_notify", bytes);
   }
 
-  MessageServer_notice_notify_result result;
+  MessageServer_mis_notify_result result;
   try {
-    iface_->notice_notify(args.request);
+    iface_->mis_notify(args.request);
   } catch (const std::exception& e) {
     if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "MessageServer.notice_notify");
+      this->eventHandler_->handlerError(ctx, "MessageServer.mis_notify");
     }
 
     ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("notice_notify", ::apache::thrift::protocol::T_EXCEPTION, seqid);
+    oprot->writeMessageBegin("mis_notify", ::apache::thrift::protocol::T_EXCEPTION, seqid);
     x.write(oprot);
     oprot->writeMessageEnd();
     oprot->getTransport()->writeEnd();
@@ -2307,70 +2116,17 @@ void MessageServerProcessor::process_notice_notify(int32_t seqid, ::apache::thri
   }
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "MessageServer.notice_notify");
+    this->eventHandler_->preWrite(ctx, "MessageServer.mis_notify");
   }
 
-  oprot->writeMessageBegin("notice_notify", ::apache::thrift::protocol::T_REPLY, seqid);
+  oprot->writeMessageBegin("mis_notify", ::apache::thrift::protocol::T_REPLY, seqid);
   result.write(oprot);
   oprot->writeMessageEnd();
   bytes = oprot->getTransport()->writeEnd();
   oprot->getTransport()->flush();
 
   if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "MessageServer.notice_notify", bytes);
-  }
-}
-
-void MessageServerProcessor::process_new_friend_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext)
-{
-  void* ctx = NULL;
-  if (this->eventHandler_.get() != NULL) {
-    ctx = this->eventHandler_->getContext("MessageServer.new_friend_notify", callContext);
-  }
-  ::apache::thrift::TProcessorContextFreer freer(this->eventHandler_.get(), ctx, "MessageServer.new_friend_notify");
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preRead(ctx, "MessageServer.new_friend_notify");
-  }
-
-  MessageServer_new_friend_notify_args args;
-  args.read(iprot);
-  iprot->readMessageEnd();
-  uint32_t bytes = iprot->getTransport()->readEnd();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postRead(ctx, "MessageServer.new_friend_notify", bytes);
-  }
-
-  MessageServer_new_friend_notify_result result;
-  try {
-    iface_->new_friend_notify(args.request);
-  } catch (const std::exception& e) {
-    if (this->eventHandler_.get() != NULL) {
-      this->eventHandler_->handlerError(ctx, "MessageServer.new_friend_notify");
-    }
-
-    ::apache::thrift::TApplicationException x(e.what());
-    oprot->writeMessageBegin("new_friend_notify", ::apache::thrift::protocol::T_EXCEPTION, seqid);
-    x.write(oprot);
-    oprot->writeMessageEnd();
-    oprot->getTransport()->writeEnd();
-    oprot->getTransport()->flush();
-    return;
-  }
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->preWrite(ctx, "MessageServer.new_friend_notify");
-  }
-
-  oprot->writeMessageBegin("new_friend_notify", ::apache::thrift::protocol::T_REPLY, seqid);
-  result.write(oprot);
-  oprot->writeMessageEnd();
-  bytes = oprot->getTransport()->writeEnd();
-  oprot->getTransport()->flush();
-
-  if (this->eventHandler_.get() != NULL) {
-    this->eventHandler_->postWrite(ctx, "MessageServer.new_friend_notify", bytes);
+    this->eventHandler_->postWrite(ctx, "MessageServer.mis_notify", bytes);
   }
 }
 

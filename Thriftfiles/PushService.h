@@ -15,13 +15,12 @@ namespace tis {
 class PushServiceIf {
  public:
   virtual ~PushServiceIf() {}
-  virtual void ping() = 0;
-  virtual void single_notify(const SingleNotifyRequest& request) = 0;
-  virtual void batch_notify(const BatchNotifyRequest& request) = 0;
-  virtual void admin_notify(const AdminNotifyRequest& request) = 0;
-  virtual void batch_info(const BatchInfoRequest& request) = 0;
-  virtual void broadcast(std::string& _return, const BroadcastRequest& request) = 0;
-  virtual void zip() = 0;
+  virtual void ping(std::string& _return) = 0;
+  virtual int32_t single_notify(const SingleNotifyRequest& request) = 0;
+  virtual int32_t batch_notify(const BatchNotifyRequest& request) = 0;
+  virtual int32_t broadcast(const BroadcastRequest& request) = 0;
+  virtual int32_t optag(const TagRequest& request) = 0;
+  virtual void condition_push(const ConditionPushRequest& request) = 0;
 };
 
 class PushServiceIfFactory {
@@ -51,25 +50,26 @@ class PushServiceIfSingletonFactory : virtual public PushServiceIfFactory {
 class PushServiceNull : virtual public PushServiceIf {
  public:
   virtual ~PushServiceNull() {}
-  void ping() {
+  void ping(std::string& /* _return */) {
     return;
   }
-  void single_notify(const SingleNotifyRequest& /* request */) {
-    return;
+  int32_t single_notify(const SingleNotifyRequest& /* request */) {
+    int32_t _return = 0;
+    return _return;
   }
-  void batch_notify(const BatchNotifyRequest& /* request */) {
-    return;
+  int32_t batch_notify(const BatchNotifyRequest& /* request */) {
+    int32_t _return = 0;
+    return _return;
   }
-  void admin_notify(const AdminNotifyRequest& /* request */) {
-    return;
+  int32_t broadcast(const BroadcastRequest& /* request */) {
+    int32_t _return = 0;
+    return _return;
   }
-  void batch_info(const BatchInfoRequest& /* request */) {
-    return;
+  int32_t optag(const TagRequest& /* request */) {
+    int32_t _return = 0;
+    return _return;
   }
-  void broadcast(std::string& /* _return */, const BroadcastRequest& /* request */) {
-    return;
-  }
-  void zip() {
+  void condition_push(const ConditionPushRequest& /* request */) {
     return;
   }
 };
@@ -119,22 +119,33 @@ class PushService_ping_pargs {
   friend std::ostream& operator<<(std::ostream& out, const PushService_ping_pargs& obj);
 };
 
+typedef struct _PushService_ping_result__isset {
+  _PushService_ping_result__isset() : success(false) {}
+  bool success :1;
+} _PushService_ping_result__isset;
 
 class PushService_ping_result {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
+  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
 
   PushService_ping_result(const PushService_ping_result&);
   PushService_ping_result& operator=(const PushService_ping_result&);
-  PushService_ping_result() {
+  PushService_ping_result() : success() {
   }
 
   virtual ~PushService_ping_result() throw();
+  std::string success;
 
-  bool operator == (const PushService_ping_result & /* rhs */) const
+  _PushService_ping_result__isset __isset;
+
+  void __set_success(const std::string& val);
+
+  bool operator == (const PushService_ping_result & rhs) const
   {
+    if (!(success == rhs.success))
+      return false;
     return true;
   }
   bool operator != (const PushService_ping_result &rhs) const {
@@ -149,15 +160,22 @@ class PushService_ping_result {
   friend std::ostream& operator<<(std::ostream& out, const PushService_ping_result& obj);
 };
 
+typedef struct _PushService_ping_presult__isset {
+  _PushService_ping_presult__isset() : success(false) {}
+  bool success :1;
+} _PushService_ping_presult__isset;
 
 class PushService_ping_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "9A73381FEFD6B67F432E717102246330";
+  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x73,0x38,0x1F,0xEF,0xD6,0xB6,0x7F,0x43,0x2E,0x71,0x71,0x02,0x24,0x63,0x30};
 
 
   virtual ~PushService_ping_presult() throw();
+  std::string* success;
+
+  _PushService_ping_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
@@ -172,8 +190,8 @@ typedef struct _PushService_single_notify_args__isset {
 class PushService_single_notify_args {
  public:
 
-  static const char* ascii_fingerprint; // = "CBCB68F9D02988FF1C20AC19B3C5FCC4";
-  static const uint8_t binary_fingerprint[16]; // = {0xCB,0xCB,0x68,0xF9,0xD0,0x29,0x88,0xFF,0x1C,0x20,0xAC,0x19,0xB3,0xC5,0xFC,0xC4};
+  static const char* ascii_fingerprint; // = "0C3DE55F7B7ED7E65D3C074CFBBFA459";
+  static const uint8_t binary_fingerprint[16]; // = {0x0C,0x3D,0xE5,0x5F,0x7B,0x7E,0xD7,0xE6,0x5D,0x3C,0x07,0x4C,0xFB,0xBF,0xA4,0x59};
 
   PushService_single_notify_args(const PushService_single_notify_args&);
   PushService_single_notify_args& operator=(const PushService_single_notify_args&);
@@ -209,8 +227,8 @@ class PushService_single_notify_args {
 class PushService_single_notify_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "CBCB68F9D02988FF1C20AC19B3C5FCC4";
-  static const uint8_t binary_fingerprint[16]; // = {0xCB,0xCB,0x68,0xF9,0xD0,0x29,0x88,0xFF,0x1C,0x20,0xAC,0x19,0xB3,0xC5,0xFC,0xC4};
+  static const char* ascii_fingerprint; // = "0C3DE55F7B7ED7E65D3C074CFBBFA459";
+  static const uint8_t binary_fingerprint[16]; // = {0x0C,0x3D,0xE5,0x5F,0x7B,0x7E,0xD7,0xE6,0x5D,0x3C,0x07,0x4C,0xFB,0xBF,0xA4,0x59};
 
 
   virtual ~PushService_single_notify_pargs() throw();
@@ -222,31 +240,31 @@ class PushService_single_notify_pargs {
 };
 
 typedef struct _PushService_single_notify_result__isset {
-  _PushService_single_notify_result__isset() : e(false) {}
-  bool e :1;
+  _PushService_single_notify_result__isset() : success(false) {}
+  bool success :1;
 } _PushService_single_notify_result__isset;
 
 class PushService_single_notify_result {
  public:
 
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
   PushService_single_notify_result(const PushService_single_notify_result&);
   PushService_single_notify_result& operator=(const PushService_single_notify_result&);
-  PushService_single_notify_result() {
+  PushService_single_notify_result() : success(0) {
   }
 
   virtual ~PushService_single_notify_result() throw();
-  InvalidParamException e;
+  int32_t success;
 
   _PushService_single_notify_result__isset __isset;
 
-  void __set_e(const InvalidParamException& val);
+  void __set_success(const int32_t val);
 
   bool operator == (const PushService_single_notify_result & rhs) const
   {
-    if (!(e == rhs.e))
+    if (!(success == rhs.success))
       return false;
     return true;
   }
@@ -263,19 +281,19 @@ class PushService_single_notify_result {
 };
 
 typedef struct _PushService_single_notify_presult__isset {
-  _PushService_single_notify_presult__isset() : e(false) {}
-  bool e :1;
+  _PushService_single_notify_presult__isset() : success(false) {}
+  bool success :1;
 } _PushService_single_notify_presult__isset;
 
 class PushService_single_notify_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
 
   virtual ~PushService_single_notify_presult() throw();
-  InvalidParamException e;
+  int32_t* success;
 
   _PushService_single_notify_presult__isset __isset;
 
@@ -292,8 +310,8 @@ typedef struct _PushService_batch_notify_args__isset {
 class PushService_batch_notify_args {
  public:
 
-  static const char* ascii_fingerprint; // = "C9E9ACC9236CB120E8751BA5317CC8C2";
-  static const uint8_t binary_fingerprint[16]; // = {0xC9,0xE9,0xAC,0xC9,0x23,0x6C,0xB1,0x20,0xE8,0x75,0x1B,0xA5,0x31,0x7C,0xC8,0xC2};
+  static const char* ascii_fingerprint; // = "C452D281D92E741B73A8FF9F78F5C6C3";
+  static const uint8_t binary_fingerprint[16]; // = {0xC4,0x52,0xD2,0x81,0xD9,0x2E,0x74,0x1B,0x73,0xA8,0xFF,0x9F,0x78,0xF5,0xC6,0xC3};
 
   PushService_batch_notify_args(const PushService_batch_notify_args&);
   PushService_batch_notify_args& operator=(const PushService_batch_notify_args&);
@@ -329,8 +347,8 @@ class PushService_batch_notify_args {
 class PushService_batch_notify_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "C9E9ACC9236CB120E8751BA5317CC8C2";
-  static const uint8_t binary_fingerprint[16]; // = {0xC9,0xE9,0xAC,0xC9,0x23,0x6C,0xB1,0x20,0xE8,0x75,0x1B,0xA5,0x31,0x7C,0xC8,0xC2};
+  static const char* ascii_fingerprint; // = "C452D281D92E741B73A8FF9F78F5C6C3";
+  static const uint8_t binary_fingerprint[16]; // = {0xC4,0x52,0xD2,0x81,0xD9,0x2E,0x74,0x1B,0x73,0xA8,0xFF,0x9F,0x78,0xF5,0xC6,0xC3};
 
 
   virtual ~PushService_batch_notify_pargs() throw();
@@ -342,31 +360,31 @@ class PushService_batch_notify_pargs {
 };
 
 typedef struct _PushService_batch_notify_result__isset {
-  _PushService_batch_notify_result__isset() : e(false) {}
-  bool e :1;
+  _PushService_batch_notify_result__isset() : success(false) {}
+  bool success :1;
 } _PushService_batch_notify_result__isset;
 
 class PushService_batch_notify_result {
  public:
 
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
   PushService_batch_notify_result(const PushService_batch_notify_result&);
   PushService_batch_notify_result& operator=(const PushService_batch_notify_result&);
-  PushService_batch_notify_result() {
+  PushService_batch_notify_result() : success(0) {
   }
 
   virtual ~PushService_batch_notify_result() throw();
-  InvalidParamException e;
+  int32_t success;
 
   _PushService_batch_notify_result__isset __isset;
 
-  void __set_e(const InvalidParamException& val);
+  void __set_success(const int32_t val);
 
   bool operator == (const PushService_batch_notify_result & rhs) const
   {
-    if (!(e == rhs.e))
+    if (!(success == rhs.success))
       return false;
     return true;
   }
@@ -383,265 +401,25 @@ class PushService_batch_notify_result {
 };
 
 typedef struct _PushService_batch_notify_presult__isset {
-  _PushService_batch_notify_presult__isset() : e(false) {}
-  bool e :1;
+  _PushService_batch_notify_presult__isset() : success(false) {}
+  bool success :1;
 } _PushService_batch_notify_presult__isset;
 
 class PushService_batch_notify_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
 
   virtual ~PushService_batch_notify_presult() throw();
-  InvalidParamException e;
+  int32_t* success;
 
   _PushService_batch_notify_presult__isset __isset;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
   friend std::ostream& operator<<(std::ostream& out, const PushService_batch_notify_presult& obj);
-};
-
-typedef struct _PushService_admin_notify_args__isset {
-  _PushService_admin_notify_args__isset() : request(false) {}
-  bool request :1;
-} _PushService_admin_notify_args__isset;
-
-class PushService_admin_notify_args {
- public:
-
-  static const char* ascii_fingerprint; // = "03DABDEC82070160674FD5B9656AF3B9";
-  static const uint8_t binary_fingerprint[16]; // = {0x03,0xDA,0xBD,0xEC,0x82,0x07,0x01,0x60,0x67,0x4F,0xD5,0xB9,0x65,0x6A,0xF3,0xB9};
-
-  PushService_admin_notify_args(const PushService_admin_notify_args&);
-  PushService_admin_notify_args& operator=(const PushService_admin_notify_args&);
-  PushService_admin_notify_args() {
-  }
-
-  virtual ~PushService_admin_notify_args() throw();
-  AdminNotifyRequest request;
-
-  _PushService_admin_notify_args__isset __isset;
-
-  void __set_request(const AdminNotifyRequest& val);
-
-  bool operator == (const PushService_admin_notify_args & rhs) const
-  {
-    if (!(request == rhs.request))
-      return false;
-    return true;
-  }
-  bool operator != (const PushService_admin_notify_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const PushService_admin_notify_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_admin_notify_args& obj);
-};
-
-
-class PushService_admin_notify_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "03DABDEC82070160674FD5B9656AF3B9";
-  static const uint8_t binary_fingerprint[16]; // = {0x03,0xDA,0xBD,0xEC,0x82,0x07,0x01,0x60,0x67,0x4F,0xD5,0xB9,0x65,0x6A,0xF3,0xB9};
-
-
-  virtual ~PushService_admin_notify_pargs() throw();
-  const AdminNotifyRequest* request;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_admin_notify_pargs& obj);
-};
-
-typedef struct _PushService_admin_notify_result__isset {
-  _PushService_admin_notify_result__isset() : e(false) {}
-  bool e :1;
-} _PushService_admin_notify_result__isset;
-
-class PushService_admin_notify_result {
- public:
-
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
-
-  PushService_admin_notify_result(const PushService_admin_notify_result&);
-  PushService_admin_notify_result& operator=(const PushService_admin_notify_result&);
-  PushService_admin_notify_result() {
-  }
-
-  virtual ~PushService_admin_notify_result() throw();
-  InvalidParamException e;
-
-  _PushService_admin_notify_result__isset __isset;
-
-  void __set_e(const InvalidParamException& val);
-
-  bool operator == (const PushService_admin_notify_result & rhs) const
-  {
-    if (!(e == rhs.e))
-      return false;
-    return true;
-  }
-  bool operator != (const PushService_admin_notify_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const PushService_admin_notify_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_admin_notify_result& obj);
-};
-
-typedef struct _PushService_admin_notify_presult__isset {
-  _PushService_admin_notify_presult__isset() : e(false) {}
-  bool e :1;
-} _PushService_admin_notify_presult__isset;
-
-class PushService_admin_notify_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
-
-
-  virtual ~PushService_admin_notify_presult() throw();
-  InvalidParamException e;
-
-  _PushService_admin_notify_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_admin_notify_presult& obj);
-};
-
-typedef struct _PushService_batch_info_args__isset {
-  _PushService_batch_info_args__isset() : request(false) {}
-  bool request :1;
-} _PushService_batch_info_args__isset;
-
-class PushService_batch_info_args {
- public:
-
-  static const char* ascii_fingerprint; // = "6E535CFE4CB31AD4E2FB9199CEB16F49";
-  static const uint8_t binary_fingerprint[16]; // = {0x6E,0x53,0x5C,0xFE,0x4C,0xB3,0x1A,0xD4,0xE2,0xFB,0x91,0x99,0xCE,0xB1,0x6F,0x49};
-
-  PushService_batch_info_args(const PushService_batch_info_args&);
-  PushService_batch_info_args& operator=(const PushService_batch_info_args&);
-  PushService_batch_info_args() {
-  }
-
-  virtual ~PushService_batch_info_args() throw();
-  BatchInfoRequest request;
-
-  _PushService_batch_info_args__isset __isset;
-
-  void __set_request(const BatchInfoRequest& val);
-
-  bool operator == (const PushService_batch_info_args & rhs) const
-  {
-    if (!(request == rhs.request))
-      return false;
-    return true;
-  }
-  bool operator != (const PushService_batch_info_args &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const PushService_batch_info_args & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_batch_info_args& obj);
-};
-
-
-class PushService_batch_info_pargs {
- public:
-
-  static const char* ascii_fingerprint; // = "6E535CFE4CB31AD4E2FB9199CEB16F49";
-  static const uint8_t binary_fingerprint[16]; // = {0x6E,0x53,0x5C,0xFE,0x4C,0xB3,0x1A,0xD4,0xE2,0xFB,0x91,0x99,0xCE,0xB1,0x6F,0x49};
-
-
-  virtual ~PushService_batch_info_pargs() throw();
-  const BatchInfoRequest* request;
-
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_batch_info_pargs& obj);
-};
-
-typedef struct _PushService_batch_info_result__isset {
-  _PushService_batch_info_result__isset() : e(false) {}
-  bool e :1;
-} _PushService_batch_info_result__isset;
-
-class PushService_batch_info_result {
- public:
-
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
-
-  PushService_batch_info_result(const PushService_batch_info_result&);
-  PushService_batch_info_result& operator=(const PushService_batch_info_result&);
-  PushService_batch_info_result() {
-  }
-
-  virtual ~PushService_batch_info_result() throw();
-  InvalidParamException e;
-
-  _PushService_batch_info_result__isset __isset;
-
-  void __set_e(const InvalidParamException& val);
-
-  bool operator == (const PushService_batch_info_result & rhs) const
-  {
-    if (!(e == rhs.e))
-      return false;
-    return true;
-  }
-  bool operator != (const PushService_batch_info_result &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const PushService_batch_info_result & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_batch_info_result& obj);
-};
-
-typedef struct _PushService_batch_info_presult__isset {
-  _PushService_batch_info_presult__isset() : e(false) {}
-  bool e :1;
-} _PushService_batch_info_presult__isset;
-
-class PushService_batch_info_presult {
- public:
-
-  static const char* ascii_fingerprint; // = "2BD9E1CC52BCB0899198EEADB3593B00";
-  static const uint8_t binary_fingerprint[16]; // = {0x2B,0xD9,0xE1,0xCC,0x52,0xBC,0xB0,0x89,0x91,0x98,0xEE,0xAD,0xB3,0x59,0x3B,0x00};
-
-
-  virtual ~PushService_batch_info_presult() throw();
-  InvalidParamException e;
-
-  _PushService_batch_info_presult__isset __isset;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-
-  friend std::ostream& operator<<(std::ostream& out, const PushService_batch_info_presult& obj);
 };
 
 typedef struct _PushService_broadcast_args__isset {
@@ -652,8 +430,8 @@ typedef struct _PushService_broadcast_args__isset {
 class PushService_broadcast_args {
  public:
 
-  static const char* ascii_fingerprint; // = "BE2F3293889B89996E50F117DA724C80";
-  static const uint8_t binary_fingerprint[16]; // = {0xBE,0x2F,0x32,0x93,0x88,0x9B,0x89,0x99,0x6E,0x50,0xF1,0x17,0xDA,0x72,0x4C,0x80};
+  static const char* ascii_fingerprint; // = "09977A7320F7AC1FE813D719D4F251C3";
+  static const uint8_t binary_fingerprint[16]; // = {0x09,0x97,0x7A,0x73,0x20,0xF7,0xAC,0x1F,0xE8,0x13,0xD7,0x19,0xD4,0xF2,0x51,0xC3};
 
   PushService_broadcast_args(const PushService_broadcast_args&);
   PushService_broadcast_args& operator=(const PushService_broadcast_args&);
@@ -689,8 +467,8 @@ class PushService_broadcast_args {
 class PushService_broadcast_pargs {
  public:
 
-  static const char* ascii_fingerprint; // = "BE2F3293889B89996E50F117DA724C80";
-  static const uint8_t binary_fingerprint[16]; // = {0xBE,0x2F,0x32,0x93,0x88,0x9B,0x89,0x99,0x6E,0x50,0xF1,0x17,0xDA,0x72,0x4C,0x80};
+  static const char* ascii_fingerprint; // = "09977A7320F7AC1FE813D719D4F251C3";
+  static const uint8_t binary_fingerprint[16]; // = {0x09,0x97,0x7A,0x73,0x20,0xF7,0xAC,0x1F,0xE8,0x13,0xD7,0x19,0xD4,0xF2,0x51,0xC3};
 
 
   virtual ~PushService_broadcast_pargs() throw();
@@ -702,37 +480,31 @@ class PushService_broadcast_pargs {
 };
 
 typedef struct _PushService_broadcast_result__isset {
-  _PushService_broadcast_result__isset() : success(false), e(false) {}
+  _PushService_broadcast_result__isset() : success(false) {}
   bool success :1;
-  bool e :1;
 } _PushService_broadcast_result__isset;
 
 class PushService_broadcast_result {
  public:
 
-  static const char* ascii_fingerprint; // = "A07D9D59939C946EC162C58D3388883E";
-  static const uint8_t binary_fingerprint[16]; // = {0xA0,0x7D,0x9D,0x59,0x93,0x9C,0x94,0x6E,0xC1,0x62,0xC5,0x8D,0x33,0x88,0x88,0x3E};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
   PushService_broadcast_result(const PushService_broadcast_result&);
   PushService_broadcast_result& operator=(const PushService_broadcast_result&);
-  PushService_broadcast_result() : success() {
+  PushService_broadcast_result() : success(0) {
   }
 
   virtual ~PushService_broadcast_result() throw();
-  std::string success;
-  InvalidParamException e;
+  int32_t success;
 
   _PushService_broadcast_result__isset __isset;
 
-  void __set_success(const std::string& val);
-
-  void __set_e(const InvalidParamException& val);
+  void __set_success(const int32_t val);
 
   bool operator == (const PushService_broadcast_result & rhs) const
   {
     if (!(success == rhs.success))
-      return false;
-    if (!(e == rhs.e))
       return false;
     return true;
   }
@@ -749,21 +521,19 @@ class PushService_broadcast_result {
 };
 
 typedef struct _PushService_broadcast_presult__isset {
-  _PushService_broadcast_presult__isset() : success(false), e(false) {}
+  _PushService_broadcast_presult__isset() : success(false) {}
   bool success :1;
-  bool e :1;
 } _PushService_broadcast_presult__isset;
 
 class PushService_broadcast_presult {
  public:
 
-  static const char* ascii_fingerprint; // = "A07D9D59939C946EC162C58D3388883E";
-  static const uint8_t binary_fingerprint[16]; // = {0xA0,0x7D,0x9D,0x59,0x93,0x9C,0x94,0x6E,0xC1,0x62,0xC5,0x8D,0x33,0x88,0x88,0x3E};
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
 
 
   virtual ~PushService_broadcast_presult() throw();
-  std::string* success;
-  InvalidParamException e;
+  int32_t* success;
 
   _PushService_broadcast_presult__isset __isset;
 
@@ -772,49 +542,226 @@ class PushService_broadcast_presult {
   friend std::ostream& operator<<(std::ostream& out, const PushService_broadcast_presult& obj);
 };
 
+typedef struct _PushService_optag_args__isset {
+  _PushService_optag_args__isset() : request(false) {}
+  bool request :1;
+} _PushService_optag_args__isset;
 
-class PushService_zip_args {
+class PushService_optag_args {
  public:
 
-  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
-  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+  static const char* ascii_fingerprint; // = "F20FF0105FD02361523CAF78EC542F60";
+  static const uint8_t binary_fingerprint[16]; // = {0xF2,0x0F,0xF0,0x10,0x5F,0xD0,0x23,0x61,0x52,0x3C,0xAF,0x78,0xEC,0x54,0x2F,0x60};
 
-  PushService_zip_args(const PushService_zip_args&);
-  PushService_zip_args& operator=(const PushService_zip_args&);
-  PushService_zip_args() {
+  PushService_optag_args(const PushService_optag_args&);
+  PushService_optag_args& operator=(const PushService_optag_args&);
+  PushService_optag_args() {
   }
 
-  virtual ~PushService_zip_args() throw();
+  virtual ~PushService_optag_args() throw();
+  TagRequest request;
 
-  bool operator == (const PushService_zip_args & /* rhs */) const
+  _PushService_optag_args__isset __isset;
+
+  void __set_request(const TagRequest& val);
+
+  bool operator == (const PushService_optag_args & rhs) const
   {
+    if (!(request == rhs.request))
+      return false;
     return true;
   }
-  bool operator != (const PushService_zip_args &rhs) const {
+  bool operator != (const PushService_optag_args &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const PushService_zip_args & ) const;
+  bool operator < (const PushService_optag_args & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const PushService_zip_args& obj);
+  friend std::ostream& operator<<(std::ostream& out, const PushService_optag_args& obj);
 };
 
 
-class PushService_zip_pargs {
+class PushService_optag_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "F20FF0105FD02361523CAF78EC542F60";
+  static const uint8_t binary_fingerprint[16]; // = {0xF2,0x0F,0xF0,0x10,0x5F,0xD0,0x23,0x61,0x52,0x3C,0xAF,0x78,0xEC,0x54,0x2F,0x60};
+
+
+  virtual ~PushService_optag_pargs() throw();
+  const TagRequest* request;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_optag_pargs& obj);
+};
+
+typedef struct _PushService_optag_result__isset {
+  _PushService_optag_result__isset() : success(false) {}
+  bool success :1;
+} _PushService_optag_result__isset;
+
+class PushService_optag_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+  PushService_optag_result(const PushService_optag_result&);
+  PushService_optag_result& operator=(const PushService_optag_result&);
+  PushService_optag_result() : success(0) {
+  }
+
+  virtual ~PushService_optag_result() throw();
+  int32_t success;
+
+  _PushService_optag_result__isset __isset;
+
+  void __set_success(const int32_t val);
+
+  bool operator == (const PushService_optag_result & rhs) const
+  {
+    if (!(success == rhs.success))
+      return false;
+    return true;
+  }
+  bool operator != (const PushService_optag_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PushService_optag_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_optag_result& obj);
+};
+
+typedef struct _PushService_optag_presult__isset {
+  _PushService_optag_presult__isset() : success(false) {}
+  bool success :1;
+} _PushService_optag_presult__isset;
+
+class PushService_optag_presult {
+ public:
+
+  static const char* ascii_fingerprint; // = "32183C4A04E706C58ED2F62566DDD8DE";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x18,0x3C,0x4A,0x04,0xE7,0x06,0xC5,0x8E,0xD2,0xF6,0x25,0x66,0xDD,0xD8,0xDE};
+
+
+  virtual ~PushService_optag_presult() throw();
+  int32_t* success;
+
+  _PushService_optag_presult__isset __isset;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_optag_presult& obj);
+};
+
+typedef struct _PushService_condition_push_args__isset {
+  _PushService_condition_push_args__isset() : request(false) {}
+  bool request :1;
+} _PushService_condition_push_args__isset;
+
+class PushService_condition_push_args {
+ public:
+
+  static const char* ascii_fingerprint; // = "2D66E99EFE754B416FC4838DBB6A6F1F";
+  static const uint8_t binary_fingerprint[16]; // = {0x2D,0x66,0xE9,0x9E,0xFE,0x75,0x4B,0x41,0x6F,0xC4,0x83,0x8D,0xBB,0x6A,0x6F,0x1F};
+
+  PushService_condition_push_args(const PushService_condition_push_args&);
+  PushService_condition_push_args& operator=(const PushService_condition_push_args&);
+  PushService_condition_push_args() {
+  }
+
+  virtual ~PushService_condition_push_args() throw();
+  ConditionPushRequest request;
+
+  _PushService_condition_push_args__isset __isset;
+
+  void __set_request(const ConditionPushRequest& val);
+
+  bool operator == (const PushService_condition_push_args & rhs) const
+  {
+    if (!(request == rhs.request))
+      return false;
+    return true;
+  }
+  bool operator != (const PushService_condition_push_args &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PushService_condition_push_args & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_condition_push_args& obj);
+};
+
+
+class PushService_condition_push_pargs {
+ public:
+
+  static const char* ascii_fingerprint; // = "2D66E99EFE754B416FC4838DBB6A6F1F";
+  static const uint8_t binary_fingerprint[16]; // = {0x2D,0x66,0xE9,0x9E,0xFE,0x75,0x4B,0x41,0x6F,0xC4,0x83,0x8D,0xBB,0x6A,0x6F,0x1F};
+
+
+  virtual ~PushService_condition_push_pargs() throw();
+  const ConditionPushRequest* request;
+
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_condition_push_pargs& obj);
+};
+
+
+class PushService_condition_push_result {
+ public:
+
+  static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
+  static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
+
+  PushService_condition_push_result(const PushService_condition_push_result&);
+  PushService_condition_push_result& operator=(const PushService_condition_push_result&);
+  PushService_condition_push_result() {
+  }
+
+  virtual ~PushService_condition_push_result() throw();
+
+  bool operator == (const PushService_condition_push_result & /* rhs */) const
+  {
+    return true;
+  }
+  bool operator != (const PushService_condition_push_result &rhs) const {
+    return !(*this == rhs);
+  }
+
+  bool operator < (const PushService_condition_push_result & ) const;
+
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
+  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+
+  friend std::ostream& operator<<(std::ostream& out, const PushService_condition_push_result& obj);
+};
+
+
+class PushService_condition_push_presult {
  public:
 
   static const char* ascii_fingerprint; // = "99914B932BD37A50B983C5E7C90AE93B";
   static const uint8_t binary_fingerprint[16]; // = {0x99,0x91,0x4B,0x93,0x2B,0xD3,0x7A,0x50,0xB9,0x83,0xC5,0xE7,0xC9,0x0A,0xE9,0x3B};
 
 
-  virtual ~PushService_zip_pargs() throw();
+  virtual ~PushService_condition_push_presult() throw();
 
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
+  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
 
-  friend std::ostream& operator<<(std::ostream& out, const PushService_zip_pargs& obj);
+  friend std::ostream& operator<<(std::ostream& out, const PushService_condition_push_presult& obj);
 };
 
 class PushServiceClient : virtual public PushServiceIf {
@@ -842,26 +789,24 @@ class PushServiceClient : virtual public PushServiceIf {
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> getOutputProtocol() {
     return poprot_;
   }
-  void ping();
+  void ping(std::string& _return);
   void send_ping();
-  void recv_ping();
-  void single_notify(const SingleNotifyRequest& request);
+  void recv_ping(std::string& _return);
+  int32_t single_notify(const SingleNotifyRequest& request);
   void send_single_notify(const SingleNotifyRequest& request);
-  void recv_single_notify();
-  void batch_notify(const BatchNotifyRequest& request);
+  int32_t recv_single_notify();
+  int32_t batch_notify(const BatchNotifyRequest& request);
   void send_batch_notify(const BatchNotifyRequest& request);
-  void recv_batch_notify();
-  void admin_notify(const AdminNotifyRequest& request);
-  void send_admin_notify(const AdminNotifyRequest& request);
-  void recv_admin_notify();
-  void batch_info(const BatchInfoRequest& request);
-  void send_batch_info(const BatchInfoRequest& request);
-  void recv_batch_info();
-  void broadcast(std::string& _return, const BroadcastRequest& request);
+  int32_t recv_batch_notify();
+  int32_t broadcast(const BroadcastRequest& request);
   void send_broadcast(const BroadcastRequest& request);
-  void recv_broadcast(std::string& _return);
-  void zip();
-  void send_zip();
+  int32_t recv_broadcast();
+  int32_t optag(const TagRequest& request);
+  void send_optag(const TagRequest& request);
+  int32_t recv_optag();
+  void condition_push(const ConditionPushRequest& request);
+  void send_condition_push(const ConditionPushRequest& request);
+  void recv_condition_push();
  protected:
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> piprot_;
   boost::shared_ptr< ::apache::thrift::protocol::TProtocol> poprot_;
@@ -880,20 +825,18 @@ class PushServiceProcessor : public ::apache::thrift::TDispatchProcessor {
   void process_ping(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_single_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_batch_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_admin_notify(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_batch_info(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
   void process_broadcast(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
-  void process_zip(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_optag(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
+  void process_condition_push(int32_t seqid, ::apache::thrift::protocol::TProtocol* iprot, ::apache::thrift::protocol::TProtocol* oprot, void* callContext);
  public:
   PushServiceProcessor(boost::shared_ptr<PushServiceIf> iface) :
     iface_(iface) {
     processMap_["ping"] = &PushServiceProcessor::process_ping;
     processMap_["single_notify"] = &PushServiceProcessor::process_single_notify;
     processMap_["batch_notify"] = &PushServiceProcessor::process_batch_notify;
-    processMap_["admin_notify"] = &PushServiceProcessor::process_admin_notify;
-    processMap_["batch_info"] = &PushServiceProcessor::process_batch_info;
     processMap_["broadcast"] = &PushServiceProcessor::process_broadcast;
-    processMap_["zip"] = &PushServiceProcessor::process_zip;
+    processMap_["optag"] = &PushServiceProcessor::process_optag;
+    processMap_["condition_push"] = &PushServiceProcessor::process_condition_push;
   }
 
   virtual ~PushServiceProcessor() {}
@@ -922,68 +865,59 @@ class PushServiceMultiface : virtual public PushServiceIf {
     ifaces_.push_back(iface);
   }
  public:
-  void ping() {
+  void ping(std::string& _return) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->ping();
+      ifaces_[i]->ping(_return);
     }
-    ifaces_[i]->ping();
+    ifaces_[i]->ping(_return);
+    return;
   }
 
-  void single_notify(const SingleNotifyRequest& request) {
+  int32_t single_notify(const SingleNotifyRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->single_notify(request);
     }
-    ifaces_[i]->single_notify(request);
+    return ifaces_[i]->single_notify(request);
   }
 
-  void batch_notify(const BatchNotifyRequest& request) {
+  int32_t batch_notify(const BatchNotifyRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
       ifaces_[i]->batch_notify(request);
     }
-    ifaces_[i]->batch_notify(request);
+    return ifaces_[i]->batch_notify(request);
   }
 
-  void admin_notify(const AdminNotifyRequest& request) {
+  int32_t broadcast(const BroadcastRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->admin_notify(request);
+      ifaces_[i]->broadcast(request);
     }
-    ifaces_[i]->admin_notify(request);
+    return ifaces_[i]->broadcast(request);
   }
 
-  void batch_info(const BatchInfoRequest& request) {
+  int32_t optag(const TagRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->batch_info(request);
+      ifaces_[i]->optag(request);
     }
-    ifaces_[i]->batch_info(request);
+    return ifaces_[i]->optag(request);
   }
 
-  void broadcast(std::string& _return, const BroadcastRequest& request) {
+  void condition_push(const ConditionPushRequest& request) {
     size_t sz = ifaces_.size();
     size_t i = 0;
     for (; i < (sz - 1); ++i) {
-      ifaces_[i]->broadcast(_return, request);
+      ifaces_[i]->condition_push(request);
     }
-    ifaces_[i]->broadcast(_return, request);
-    return;
-  }
-
-  void zip() {
-    size_t sz = ifaces_.size();
-    size_t i = 0;
-    for (; i < (sz - 1); ++i) {
-      ifaces_[i]->zip();
-    }
-    ifaces_[i]->zip();
+    ifaces_[i]->condition_push(request);
   }
 
 };

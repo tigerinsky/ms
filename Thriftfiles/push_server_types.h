@@ -19,30 +19,29 @@
 
 namespace tis {
 
-struct NotifyType {
+struct LandingType {
   enum type {
     INDEX = 1,
     WAP = 2,
     COMMUNITY_DETAIL = 3,
     FRIEND = 4,
     PRIVATE_MSG = 5,
-    SYSTEM_MSG = 6
+    SYSTEM_MSG = 6,
+    USER = 7
   };
 };
 
-extern const std::map<int, const char*> _NotifyType_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _LandingType_VALUES_TO_NAMES;
 
-struct InfoType {
+struct MessageType {
   enum type {
-    INDEX = 1,
-    COMMUNITY = 2,
-    PRIVATE_MSG = 4,
-    NEW_FRIEND = 5,
-    MY_MSG = 6
+    NOTIFY = 1,
+    NOTIFYRED = 2,
+    EMAILRED = 3
   };
 };
 
-extern const std::map<int, const char*> _InfoType_VALUES_TO_NAMES;
+extern const std::map<int, const char*> _MessageType_VALUES_TO_NAMES;
 
 struct DeviceType {
   enum type {
@@ -55,41 +54,41 @@ extern const std::map<int, const char*> _DeviceType_VALUES_TO_NAMES;
 
 class Notify;
 
-class Info;
-
 class SingleNotifyRequest;
 
 class BatchNotifyRequest;
 
-class BatchInfoRequest;
-
 class BroadcastRequest;
 
-class AdminNotifyRequest;
+class TagRequest;
 
-class InvalidParamException;
+class ConditionPushRequest;
 
 
 class Notify {
  public:
 
-  static const char* ascii_fingerprint; // = "54E7F89931576CA0EA7FDD572B1F6F70";
-  static const uint8_t binary_fingerprint[16]; // = {0x54,0xE7,0xF8,0x99,0x31,0x57,0x6C,0xA0,0xEA,0x7F,0xDD,0x57,0x2B,0x1F,0x6F,0x70};
+  static const char* ascii_fingerprint; // = "0B16BE0E889E92C128BB4AF0864A1587";
+  static const uint8_t binary_fingerprint[16]; // = {0x0B,0x16,0xBE,0x0E,0x88,0x9E,0x92,0xC1,0x28,0xBB,0x4A,0xF0,0x86,0x4A,0x15,0x87};
 
   Notify(const Notify&);
   Notify& operator=(const Notify&);
-  Notify() : type(0), content(), title(""), url(""), tid(0), uid(0) {
+  Notify() : mtype(0), ltype(1), content(""), title(""), url(""), tid(0), uid(0), num(-1) {
   }
 
   virtual ~Notify() throw();
-  int32_t type;
+  int32_t mtype;
+  int32_t ltype;
   std::string content;
   std::string title;
   std::string url;
   int32_t tid;
   int32_t uid;
+  int32_t num;
 
-  void __set_type(const int32_t val);
+  void __set_mtype(const int32_t val);
+
+  void __set_ltype(const int32_t val);
 
   void __set_content(const std::string& val);
 
@@ -101,9 +100,13 @@ class Notify {
 
   void __set_uid(const int32_t val);
 
+  void __set_num(const int32_t val);
+
   bool operator == (const Notify & rhs) const
   {
-    if (!(type == rhs.type))
+    if (!(mtype == rhs.mtype))
+      return false;
+    if (!(ltype == rhs.ltype))
       return false;
     if (!(content == rhs.content))
       return false;
@@ -114,6 +117,8 @@ class Notify {
     if (!(tid == rhs.tid))
       return false;
     if (!(uid == rhs.uid))
+      return false;
+    if (!(num == rhs.num))
       return false;
     return true;
   }
@@ -132,87 +137,35 @@ class Notify {
 void swap(Notify &a, Notify &b);
 
 
-class Info {
- public:
-
-  static const char* ascii_fingerprint; // = "AD5E8581BBE4C3CDE5FC5930DA3DD601";
-  static const uint8_t binary_fingerprint[16]; // = {0xAD,0x5E,0x85,0x81,0xBB,0xE4,0xC3,0xCD,0xE5,0xFC,0x59,0x30,0xDA,0x3D,0xD6,0x01};
-
-  Info(const Info&);
-  Info& operator=(const Info&);
-  Info() : type(0), device_id(), num(-1), uid(0) {
-  }
-
-  virtual ~Info() throw();
-  int32_t type;
-  std::string device_id;
-  int32_t num;
-  int32_t uid;
-
-  void __set_type(const int32_t val);
-
-  void __set_device_id(const std::string& val);
-
-  void __set_num(const int32_t val);
-
-  void __set_uid(const int32_t val);
-
-  bool operator == (const Info & rhs) const
-  {
-    if (!(type == rhs.type))
-      return false;
-    if (!(device_id == rhs.device_id))
-      return false;
-    if (!(num == rhs.num))
-      return false;
-    if (!(uid == rhs.uid))
-      return false;
-    return true;
-  }
-  bool operator != (const Info &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const Info & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const Info& obj);
-};
-
-void swap(Info &a, Info &b);
-
-
 class SingleNotifyRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "8BEDB189560815C23D9C74B0F45DFFA0";
-  static const uint8_t binary_fingerprint[16]; // = {0x8B,0xED,0xB1,0x89,0x56,0x08,0x15,0xC2,0x3D,0x9C,0x74,0xB0,0xF4,0x5D,0xFF,0xA0};
+  static const char* ascii_fingerprint; // = "ABF94A58609F5D74998803834EF43F11";
+  static const uint8_t binary_fingerprint[16]; // = {0xAB,0xF9,0x4A,0x58,0x60,0x9F,0x5D,0x74,0x99,0x88,0x03,0x83,0x4E,0xF4,0x3F,0x11};
 
   SingleNotifyRequest(const SingleNotifyRequest&);
   SingleNotifyRequest& operator=(const SingleNotifyRequest&);
-  SingleNotifyRequest() : device_id(), device_type(0) {
+  SingleNotifyRequest() : device_type(0), device_id() {
   }
 
   virtual ~SingleNotifyRequest() throw();
-  std::string device_id;
   Notify notify;
   int32_t device_type;
-
-  void __set_device_id(const std::string& val);
+  std::string device_id;
 
   void __set_notify(const Notify& val);
 
   void __set_device_type(const int32_t val);
 
+  void __set_device_id(const std::string& val);
+
   bool operator == (const SingleNotifyRequest & rhs) const
   {
-    if (!(device_id == rhs.device_id))
-      return false;
     if (!(notify == rhs.notify))
       return false;
     if (!(device_type == rhs.device_type))
+      return false;
+    if (!(device_id == rhs.device_id))
       return false;
     return true;
   }
@@ -234,8 +187,8 @@ void swap(SingleNotifyRequest &a, SingleNotifyRequest &b);
 class BatchNotifyRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "2F550C4B5CB27788B4770238355FE5A2";
-  static const uint8_t binary_fingerprint[16]; // = {0x2F,0x55,0x0C,0x4B,0x5C,0xB2,0x77,0x88,0xB4,0x77,0x02,0x38,0x35,0x5F,0xE5,0xA2};
+  static const char* ascii_fingerprint; // = "9A4EA7C08FDDEF0AE55C79D69E6A925C";
+  static const uint8_t binary_fingerprint[16]; // = {0x9A,0x4E,0xA7,0xC0,0x8F,0xDD,0xEF,0x0A,0xE5,0x5C,0x79,0xD6,0x9E,0x6A,0x92,0x5C};
 
   BatchNotifyRequest(const BatchNotifyRequest&);
   BatchNotifyRequest& operator=(const BatchNotifyRequest&);
@@ -288,69 +241,30 @@ class BatchNotifyRequest {
 void swap(BatchNotifyRequest &a, BatchNotifyRequest &b);
 
 
-class BatchInfoRequest {
- public:
-
-  static const char* ascii_fingerprint; // = "391C28D3226FBD3FCA1AB6FEE7917575";
-  static const uint8_t binary_fingerprint[16]; // = {0x39,0x1C,0x28,0xD3,0x22,0x6F,0xBD,0x3F,0xCA,0x1A,0xB6,0xFE,0xE7,0x91,0x75,0x75};
-
-  BatchInfoRequest(const BatchInfoRequest&);
-  BatchInfoRequest& operator=(const BatchInfoRequest&);
-  BatchInfoRequest() : device_type(0) {
-  }
-
-  virtual ~BatchInfoRequest() throw();
-  std::vector<Info>  info_list;
-  int32_t device_type;
-
-  void __set_info_list(const std::vector<Info> & val);
-
-  void __set_device_type(const int32_t val);
-
-  bool operator == (const BatchInfoRequest & rhs) const
-  {
-    if (!(info_list == rhs.info_list))
-      return false;
-    if (!(device_type == rhs.device_type))
-      return false;
-    return true;
-  }
-  bool operator != (const BatchInfoRequest &rhs) const {
-    return !(*this == rhs);
-  }
-
-  bool operator < (const BatchInfoRequest & ) const;
-
-  uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
-  uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
-
-  friend std::ostream& operator<<(std::ostream& out, const BatchInfoRequest& obj);
-};
-
-void swap(BatchInfoRequest &a, BatchInfoRequest &b);
-
-
 class BroadcastRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "DF0CAEBB6F2D1BB128517CCCE5C215BF";
-  static const uint8_t binary_fingerprint[16]; // = {0xDF,0x0C,0xAE,0xBB,0x6F,0x2D,0x1B,0xB1,0x28,0x51,0x7C,0xCC,0xE5,0xC2,0x15,0xBF};
+  static const char* ascii_fingerprint; // = "C3E7EF15CF5E859F4E977C9B69809F05";
+  static const uint8_t binary_fingerprint[16]; // = {0xC3,0xE7,0xEF,0x15,0xCF,0x5E,0x85,0x9F,0x4E,0x97,0x7C,0x9B,0x69,0x80,0x9F,0x05};
 
   BroadcastRequest(const BroadcastRequest&);
   BroadcastRequest& operator=(const BroadcastRequest&);
-  BroadcastRequest() : send_time(1426897707), push_task_id(0) {
+  BroadcastRequest() : send_time(1426897707), push_task_id(0), device_type(0) {
   }
 
   virtual ~BroadcastRequest() throw();
   Notify notify;
   int32_t send_time;
   int32_t push_task_id;
+  int32_t device_type;
 
   void __set_notify(const Notify& val);
 
   void __set_send_time(const int32_t val);
 
   void __set_push_task_id(const int32_t val);
+
+  void __set_device_type(const int32_t val);
 
   bool operator == (const BroadcastRequest & rhs) const
   {
@@ -359,6 +273,8 @@ class BroadcastRequest {
     if (!(send_time == rhs.send_time))
       return false;
     if (!(push_task_id == rhs.push_task_id))
+      return false;
+    if (!(device_type == rhs.device_type))
       return false;
     return true;
   }
@@ -377,115 +293,123 @@ class BroadcastRequest {
 void swap(BroadcastRequest &a, BroadcastRequest &b);
 
 
-class AdminNotifyRequest {
+class TagRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "25CA238F7F8E4D993802165C2172B80F";
-  static const uint8_t binary_fingerprint[16]; // = {0x25,0xCA,0x23,0x8F,0x7F,0x8E,0x4D,0x99,0x38,0x02,0x16,0x5C,0x21,0x72,0xB8,0x0F};
+  static const char* ascii_fingerprint; // = "8630C9D736B7927C3AB90D8E0D7E4064";
+  static const uint8_t binary_fingerprint[16]; // = {0x86,0x30,0xC9,0xD7,0x36,0xB7,0x92,0x7C,0x3A,0xB9,0x0D,0x8E,0x0D,0x7E,0x40,0x64};
 
-  AdminNotifyRequest(const AdminNotifyRequest&);
-  AdminNotifyRequest& operator=(const AdminNotifyRequest&);
-  AdminNotifyRequest() : type(0), flow(0), from_uid(0), to_uid(0), ctime(0), mid(0) {
+  TagRequest(const TagRequest&);
+  TagRequest& operator=(const TagRequest&);
+  TagRequest() : uid(0), xg_device_token(""), op(0) {
   }
 
-  virtual ~AdminNotifyRequest() throw();
-  int16_t type;
-  int16_t flow;
-  int32_t from_uid;
-  int32_t to_uid;
-  int32_t ctime;
-  int32_t mid;
+  virtual ~TagRequest() throw();
+  int32_t uid;
+  std::string xg_device_token;
+  int32_t op;
+  std::vector<std::string>  tag_list;
 
-  void __set_type(const int16_t val);
+  void __set_uid(const int32_t val);
 
-  void __set_flow(const int16_t val);
+  void __set_xg_device_token(const std::string& val);
 
-  void __set_from_uid(const int32_t val);
+  void __set_op(const int32_t val);
 
-  void __set_to_uid(const int32_t val);
+  void __set_tag_list(const std::vector<std::string> & val);
 
-  void __set_ctime(const int32_t val);
-
-  void __set_mid(const int32_t val);
-
-  bool operator == (const AdminNotifyRequest & rhs) const
+  bool operator == (const TagRequest & rhs) const
   {
-    if (!(type == rhs.type))
+    if (!(uid == rhs.uid))
       return false;
-    if (!(flow == rhs.flow))
+    if (!(xg_device_token == rhs.xg_device_token))
       return false;
-    if (!(from_uid == rhs.from_uid))
+    if (!(op == rhs.op))
       return false;
-    if (!(to_uid == rhs.to_uid))
-      return false;
-    if (!(ctime == rhs.ctime))
-      return false;
-    if (!(mid == rhs.mid))
+    if (!(tag_list == rhs.tag_list))
       return false;
     return true;
   }
-  bool operator != (const AdminNotifyRequest &rhs) const {
+  bool operator != (const TagRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const AdminNotifyRequest & ) const;
+  bool operator < (const TagRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const AdminNotifyRequest& obj);
+  friend std::ostream& operator<<(std::ostream& out, const TagRequest& obj);
 };
 
-void swap(AdminNotifyRequest &a, AdminNotifyRequest &b);
+void swap(TagRequest &a, TagRequest &b);
 
-typedef struct _InvalidParamException__isset {
-  _InvalidParamException__isset() : errmsg(false), errcode(false) {}
-  bool errmsg :1;
-  bool errcode :1;
-} _InvalidParamException__isset;
 
-class InvalidParamException : public ::apache::thrift::TException {
+class ConditionPushRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "EEBC915CE44901401D881E6091423036";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0xBC,0x91,0x5C,0xE4,0x49,0x01,0x40,0x1D,0x88,0x1E,0x60,0x91,0x42,0x30,0x36};
+  static const char* ascii_fingerprint; // = "4D97F45FF1C7DDBDFA9D1B5EA54DBA81";
+  static const uint8_t binary_fingerprint[16]; // = {0x4D,0x97,0xF4,0x5F,0xF1,0xC7,0xDD,0xBD,0xFA,0x9D,0x1B,0x5E,0xA5,0x4D,0xBA,0x81};
 
-  InvalidParamException(const InvalidParamException&);
-  InvalidParamException& operator=(const InvalidParamException&);
-  InvalidParamException() : errmsg(), errcode(0) {
+  ConditionPushRequest(const ConditionPushRequest&);
+  ConditionPushRequest& operator=(const ConditionPushRequest&);
+  ConditionPushRequest() : device_type(0), city(), school(), ukind_verify(), send_time(1426897707), push_task_id(0) {
   }
 
-  virtual ~InvalidParamException() throw();
-  std::string errmsg;
-  int32_t errcode;
+  virtual ~ConditionPushRequest() throw();
+  Notify notify;
+  int32_t device_type;
+  std::string city;
+  std::string school;
+  std::string ukind_verify;
+  int32_t send_time;
+  int32_t push_task_id;
 
-  _InvalidParamException__isset __isset;
+  void __set_notify(const Notify& val);
 
-  void __set_errmsg(const std::string& val);
+  void __set_device_type(const int32_t val);
 
-  void __set_errcode(const int32_t val);
+  void __set_city(const std::string& val);
 
-  bool operator == (const InvalidParamException & rhs) const
+  void __set_school(const std::string& val);
+
+  void __set_ukind_verify(const std::string& val);
+
+  void __set_send_time(const int32_t val);
+
+  void __set_push_task_id(const int32_t val);
+
+  bool operator == (const ConditionPushRequest & rhs) const
   {
-    if (!(errmsg == rhs.errmsg))
+    if (!(notify == rhs.notify))
       return false;
-    if (!(errcode == rhs.errcode))
+    if (!(device_type == rhs.device_type))
+      return false;
+    if (!(city == rhs.city))
+      return false;
+    if (!(school == rhs.school))
+      return false;
+    if (!(ukind_verify == rhs.ukind_verify))
+      return false;
+    if (!(send_time == rhs.send_time))
+      return false;
+    if (!(push_task_id == rhs.push_task_id))
       return false;
     return true;
   }
-  bool operator != (const InvalidParamException &rhs) const {
+  bool operator != (const ConditionPushRequest &rhs) const {
     return !(*this == rhs);
   }
 
-  bool operator < (const InvalidParamException & ) const;
+  bool operator < (const ConditionPushRequest & ) const;
 
   uint32_t read(::apache::thrift::protocol::TProtocol* iprot);
   uint32_t write(::apache::thrift::protocol::TProtocol* oprot) const;
 
-  friend std::ostream& operator<<(std::ostream& out, const InvalidParamException& obj);
+  friend std::ostream& operator<<(std::ostream& out, const ConditionPushRequest& obj);
 };
 
-void swap(InvalidParamException &a, InvalidParamException &b);
+void swap(ConditionPushRequest &a, ConditionPushRequest &b);
 
 } // namespace
 

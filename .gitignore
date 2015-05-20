@@ -2,3 +2,5 @@ comake.py
 *.o
 Makefile
 output/
+Thriftfiles/*.cpp
+Thriftfiles/*.h

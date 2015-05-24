@@ -30,12 +30,12 @@ class MessageServerHandler : virtual public MessageServerIf {
 
   void send_system_msg(const SystemMessage& sMsg);
 
-  void set_read(const int32_t sMsgId);
+  int32_t set_read(const int32_t sMsgId);
 
-  void set_delete(const int32_t sMsgId);
+  int32_t set_delete(const int32_t sMsgId);
   
   //消除小红点
-  void clear_red_by_uid(
+  int32_t clear_red_by_uid(
           const int32_t uid, 
           const int32_t mType, 
           const int32_t num,
@@ -49,9 +49,11 @@ class MessageServerHandler : virtual public MessageServerIf {
 
   //void new_friend_notify(const NewFriendRequest& request);
 
-  void update_config(const int32_t key, const std::string& value);
+  int32_t update_config(const int32_t key, const std::string& value);
 
   int32_t get_num(const int32_t uid, const int32_t queue_type);
+
+  int32_t optag(const OpTagRequest& request);
 
  private:
   long get_timestamp();

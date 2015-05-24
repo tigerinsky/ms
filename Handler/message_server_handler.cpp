@@ -304,7 +304,7 @@ namespace tis {
 
             gettimeofday(&t1, NULL);
             if (0 == _mysql_dao->get_device_info(sMsg.to_uid.at(i), device_type, xg_device_token)) {
-                //LOG(INFO) << "get_device_info ok!" << endl;
+                LOG(INFO) << "get_device_info ok! to_uid[" << sMsg.to_uid.at(i) << "] xg_device_token[" << xg_device_token.size() << "]";
                 gettimeofday(&t2, NULL);
                 Notify notify;
                 notify.mtype = message_type.NOTIFY;
@@ -540,7 +540,7 @@ namespace tis {
 
     }
 
-    void MessageServerHandler::set_read(const int32_t sysMessageId) {//move to off_hub
+    int32_t MessageServerHandler::set_read(const int32_t sysMessageId) {//move to off_hub
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -562,7 +562,7 @@ namespace tis {
         }
     }
 
-    void MessageServerHandler::set_delete(const int32_t sysMessageId) {//TODO move to off_hub
+    int32_t MessageServerHandler::set_delete(const int32_t sysMessageId) {//TODO move to off_hub
         // Your implementation goes here
         timeval time_start;
         gettimeofday(&time_start, NULL);
@@ -585,7 +585,7 @@ namespace tis {
     }
 
     //消除小红点
-    void MessageServerHandler::clear_red_by_uid(
+    int32_t MessageServerHandler::clear_red_by_uid(
             const int32_t uid, 
             const int32_t mType,
             const int32_t num,
@@ -614,7 +614,7 @@ namespace tis {
         }
         else {
             LOG(ERROR) << "mType error" << endl;
-            return;
+            return -1;
         }
 
         char buffer[128];
@@ -630,9 +630,11 @@ namespace tis {
         gettimeofday(&time_end, NULL);
         LOG(INFO) << "[clear_red] key=" << key.c_str() << " uid=" << uid \
             << " cost=" << TIMEDIFF(time_start, time_end) << endl;
+
+        return 0;
     }
 
-    void MessageServerHandler::update_config(const int32_t key, const string& value) {//TODO config缓存移到redis中
+    int32_t MessageServerHandler::update_config(const int32_t key, const string& value) {//TODO config缓存移到redis中
         int32_t uid = key;
         string a = value;
         g_data.g_shared_push_config.update(uid, a);
@@ -640,6 +642,8 @@ namespace tis {
         string new_value;
         g_data.g_shared_push_config.find(uid, new_value);
         LOG(INFO) << "[update_config] key=" << key << " new_value=" << new_value.c_str() << endl;
+
+        return 0;
     }
 
     void MessageServerHandler::new_tweet_notify(
@@ -677,6 +681,20 @@ namespace tis {
             << " tid=" << request.tid \
             << " cost=" << TIMEDIFF(time_start, time_end) \
             << endl;
+    }
+
+    int32_t MessageServerHandler::optag(const OpTagRequest& request) {
+        ThreadSpace* tsp = __get_thread_space();
+        PushClient* _push_client = tsp->_push_client;
+
+        TagRequest tag_request;
+        tag_request.uid = request.uid;
+        tag_request.xg_device_token = request.xg_device_token;
+        tag_request.op = request.op;
+        tag_request.tag_list = request.tag_list;
+
+        return _push_client->optag(tag_request);
+
     }
 
     void MessageServerHandler::mis_notify(

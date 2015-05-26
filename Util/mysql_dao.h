@@ -33,7 +33,7 @@ public:
             int32_t action_type,
             int32_t to_uid,
             const char* to_name,
-            int32_t content_id,
+            int64_t content_id,
             long create_time,
             long update_time);
     int set_system_message_read(int32_t sys_message_id,

@@ -33,7 +33,7 @@ namespace tis {
             MysqlProxy::PREPARE_UINT16,
             MysqlProxy::PREPARE_INT32,
             MysqlProxy::PREPARE_STRING,
-            MysqlProxy::PREPARE_INT32,
+            MysqlProxy::PREPARE_INT64,
             MysqlProxy::PREPARE_INT64,
             MysqlProxy::PREPARE_INT64);
 
@@ -157,7 +157,7 @@ namespace tis {
             int32_t action_type,
             int32_t to_uid,
             const char* to_name,
-            int32_t content_id,
+            int64_t content_id,
             long create_time,
             long update_time) {
         int ret = _mysql_proxy->execute(

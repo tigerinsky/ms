@@ -76,7 +76,7 @@ class MessageServerHandler : virtual public MessageServerIf {
 
   //检查最近是否有点赞或关注,避免频繁推消息
   bool check_action_frequent(int32_t from_uid,
-          int type, int32_t to_uid, int32_t content_id);
+          int type, int32_t to_uid, int64_t content_id);
 };
 
 }

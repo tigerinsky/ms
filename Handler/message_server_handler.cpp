@@ -218,7 +218,7 @@ namespace tis {
     }*/
 
     bool MessageServerHandler::check_action_frequent(int32_t from_uid,
-            int type, int32_t to_uid, int32_t content_id) {
+            int type, int32_t to_uid, int64_t content_id) {
         if (ActionType::FOLLOW != type && ActionType::PRAISE != type) {
             return false;
         }
@@ -418,7 +418,7 @@ namespace tis {
 
         int ret = -1;
         char uid_buf[128];
-        snprintf(uid_buf, sizeof(uid_buf), "user_%d", uid);
+        snprintf(uid_buf, sizeof(uid_buf), "user_detail_%d", uid);
         if (RedisProxy::REDIS_HGET_OK == 
                 _redis_proxy->hget(uid_buf, "sname", name)) {
             ret = 0;
@@ -692,6 +692,8 @@ namespace tis {
         tag_request.xg_device_token = request.xg_device_token;
         tag_request.op = request.op;
         tag_request.tag_list = request.tag_list;
+
+        LOG(INFO) << "msg[op tag] uid[" << tag_request.uid << "] xg_device_token[" << tag_request.xg_device_token << "]";
 
         return _push_client->optag(tag_request);
 

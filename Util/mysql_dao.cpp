@@ -236,12 +236,12 @@ namespace tis {
     int MysqlDAO::get_push_config(int32_t uid, string &ret_config) {
         int res = 0;
         ret_config.clear();
-        int ret = g_data.g_shared_push_config.find(uid, ret_config);
+        /*int ret = g_data.g_shared_push_config.find(uid, ret_config);
         if (ret == SharedHashMap::PROCESS_OK) {
             //LOG(INFO) << "get config from db: " << ret_config << endl;
             return res;
-        }
-        ret  = _mysql_proxy->execute(
+        }*/
+        int ret  = _mysql_proxy->execute(
                 _get_push_config_stmt,
                 uid);
         if (MysqlProxy::MYSQL_QUERY_OK != ret) {

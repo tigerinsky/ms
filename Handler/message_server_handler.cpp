@@ -17,6 +17,7 @@
 using std::string;
 using std::endl;
 using std::vector;
+using std::to_string;
 using namespace ::apache::thrift;
 //using namespace lj;
 
@@ -47,11 +48,14 @@ namespace tis {
         ret = space->_redis_proxy->connect(FLAGS_db_redis_host.c_str(),
                 FLAGS_db_redis_port);
 
-        space->_cache_redis_proxy = new RedisProxy();//用户
+        /*space->_cache_redis_proxy = new RedisProxy();//用户
         int ret2 = space->_cache_redis_proxy->connect(FLAGS_cache_redis_host.c_str(),
                 FLAGS_cache_redis_port);
 
         if (0 != ret || 0 != ret2) {
+            return 2;
+        }*/
+        if (0 != ret) {
             return 2;
         }
         space->_expired_queue = new ExpiredQueue(space->_redis_proxy);
@@ -449,12 +453,23 @@ namespace tis {
     bool MessageServerHandler::can_push(int32_t uid, string config_type) {
         ThreadSpace* tsp = __get_thread_space();
         MysqlDAO* _mysql_dao = tsp->_mysql_dao;
+        RedisProxy* _redis_proxy = tsp->_redis_proxy;
+
+        string key = "myb::push::config::" + to_string(uid);
 
         string config;
-        int ret = _mysql_dao->get_push_config(uid, config);
-        if (ret != 0) {
-            LOG(ERROR) << "get push config error" << endl;
-            return false;
+
+        int ret = _redis_proxy->get(key.c_str(), config);
+        LOG(INFO) << "get config from redis, uid[" << uid << "] config[" << config <<"] ret[" << ret << "]";
+        if (ret  == RedisProxy::REDIS_GET_NOT_EXIST) {
+            config = "";
+        } else if (ret == RedisProxy::REDIS_GET_ERR) {//reids 挂了从数据库读
+            LOG(WARNING) << "get config from mysql, uid[" << uid << "] config_type[" << config_type << "]";
+            int mysql_ret = _mysql_dao->get_push_config(uid, config);
+            if (mysql_ret != 0) {
+                LOG(ERROR) << "get push config error" << endl;
+                return false;
+            }
         }
 
         if (config == "") {

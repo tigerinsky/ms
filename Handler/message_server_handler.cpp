@@ -19,7 +19,6 @@ using std::endl;
 using std::vector;
 using std::to_string;
 using namespace ::apache::thrift;
-//using namespace lj;
 
 namespace tis {
     typedef struct ThreadSpace {
@@ -328,7 +327,7 @@ namespace tis {
                         notify.content = from_name + " 给你发了一条私信";
                         notify.ltype = landing_type.PRIVATE_MSG;
                         notify.uid = sMsg.from_uid;
-                        red_remind.ltype = message_type.EMAILRED;
+                        red_remind.mtype = message_type.EMAILRED;
                         red_remind.uid = sMsg.from_uid;
                         config_type.assign("pmsg_notify");
                         break;

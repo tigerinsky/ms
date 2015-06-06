@@ -49,8 +49,9 @@ int MsServer::run() {
     // processor
     shared_ptr<MessageServerHandler> handler(new MessageServerHandler());
     shared_ptr<TProcessor> processor(new MessageServerProcessor(handler));
-    if (MessageServerHandler::init_thread_data(FLAGS_server_thread_num)) {
-        LOG(ERROR) << "init thread space error";
+    int ret = MessageServerHandler::init_thread_data(FLAGS_server_thread_num);
+    if (ret) {
+        LOG(ERROR) << "init thread space error, ret[" << ret << "]";
         return 1;
     }
 

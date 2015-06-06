@@ -23,7 +23,7 @@ using namespace ::apache::thrift;
 namespace tis {
     typedef struct ThreadSpace {
         RedisProxy *_redis_proxy;
-        RedisProxy *_cache_redis_proxy;
+        RedisProxy *_db_redis_proxy;
         MysqlDAO *_mysql_dao;
         PushClient *_push_client;
         ExpiredQueue *_expired_queue;
@@ -43,20 +43,19 @@ namespace tis {
         if (ret != 0) { //数据库初始化失败,启动退出
             return 1;
         }
-        space->_redis_proxy = new RedisProxy();//离线
-        ret = space->_redis_proxy->connect(FLAGS_db_redis_host.c_str(),
-                FLAGS_db_redis_port);
-
-        /*space->_cache_redis_proxy = new RedisProxy();//用户
-        int ret2 = space->_cache_redis_proxy->connect(FLAGS_cache_redis_host.c_str(),
+        space->_redis_proxy = new RedisProxy();//cache redis
+        ret = space->_redis_proxy->connect(FLAGS_cache_redis_host.c_str(),
                 FLAGS_cache_redis_port);
 
+        space->_db_redis_proxy = new RedisProxy();//用户
+        int ret2 = space->_db_redis_proxy->connect(FLAGS_db_redis_host.c_str(),
+                FLAGS_db_redis_port);
+
         if (0 != ret || 0 != ret2) {
-            return 2;
-        }*/
-        if (0 != ret) {
+            LOG(WARNING) << "connect redis error, ret[" << ret << "] ret2[" << "]";
             return 2;
         }
+
         space->_expired_queue = new ExpiredQueue(space->_redis_proxy);
         space->_push_client = new PushClient(FLAGS_ps_host.c_str(), FLAGS_ps_port);
 
@@ -373,8 +372,11 @@ namespace tis {
 
                     //推送通知
                     single_notify_request.notify = notify;
-                    if(single_notify_request.device_type == 2 || 
+                    /*if(single_notify_request.device_type == 2 || 
                        (single_notify_request.device_type == 1 && can_push(sMsg.to_uid.at(i), config_type))) {
+                        _push_client->single_notify(single_notify_request);
+                    }*/
+                    if (can_push(sMsg.to_uid.at(i), config_type)) {
                         _push_client->single_notify(single_notify_request);
                     }
                 }
@@ -417,13 +419,13 @@ namespace tis {
             int32_t uid,
             std::string& name) {
         ThreadSpace* tsp = __get_thread_space();
-        RedisProxy* _redis_proxy = tsp->_redis_proxy;
+        RedisProxy* _db_redis_proxy = tsp->_db_redis_proxy;
 
         int ret = -1;
         char uid_buf[128];
         snprintf(uid_buf, sizeof(uid_buf), "user_detail_%d", uid);
         if (RedisProxy::REDIS_HGET_OK == 
-                _redis_proxy->hget(uid_buf, "sname", name)) {
+                _db_redis_proxy->hget(uid_buf, "sname", name)) {
             ret = 0;
         } else {
             LOG(ERROR) << "get user name error! uid = " << uid << endl;
@@ -739,7 +741,7 @@ namespace tis {
             notify.tid = request.tid;
         }
 
-        if (is_broadcast == 0) {
+        if (is_broadcast == 1) {
             BroadcastRequest broadcast_request;
             broadcast_request.notify = notify;
             broadcast_request.send_time = request.send_time;

@@ -16,6 +16,8 @@ enum ActionType {
     NEW_TWEET = 7,      //小秘书将讨论推荐到要闻
     NEW_FRIEND = 8,     //好友推荐, 新的可关注好友
     MIS_AUTHENTED = 9,  //mis认证通过
+    ARCHIEVE_GET = 10, //获得成就
+    ARCHIEVE_ABOUT = 11, //参与成就
 }
 
 /**

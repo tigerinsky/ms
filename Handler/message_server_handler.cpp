@@ -276,7 +276,7 @@ namespace tis {
 
             //系统消息入数据库(私信除外)
             if (ActionType::MAIL != sMsg.action_type
-                    && ActionType::NEW_FRIEND > sMsg.action_type) {
+                    && ActionType::ARCHIEVE_ABOUT> sMsg.action_type) {
                 int ret = _mysql_dao->insert_system_message(sMsg.from_uid, from_name.c_str(),
                         sMsg.action_type, sMsg.to_uid.at(i), to_name.c_str(), sMsg.content_id,
                         time_now, time_now);
@@ -285,20 +285,6 @@ namespace tis {
                 }
             }
 
-
-            /*//蓝鲸小秘书私信或被关注
-            int to_dummy = get_dummy(sMsg.to_uid.at(i));
-            if (2 == to_dummy) {//1:后台小马甲; 2:小秘书
-                int flow = 1;
-                if (ActionType::FOLLOW == sMsg.action_type) {
-                    admin_notify(2, flow, sMsg.from_uid, sMsg.to_uid.at(i), time_now, 0);
-                } else if (ActionType::MAIL == sMsg.action_type) {
-                    string content("");
-                    int32_t ctime = 0;
-                    _mysql_dao->get_message(sMsg.content_id, content, ctime);
-                    admin_notify(1, flow, sMsg.from_uid, sMsg.to_uid.at(i), ctime, sMsg.content_id);
-                }
-            }*/
 
             //读数据库ci_user_push得到每个用户的deviceType和xg_device_token. 
             vector<int32_t> device_type;
@@ -310,9 +296,9 @@ namespace tis {
                 gettimeofday(&t2, NULL);
                 Notify notify;
                 notify.mtype = message_type.NOTIFY;
-                notify.title = "美院帮消息"; //TODO 临时文案
+                notify.title = "丁丁热图"; //TODO 临时文案
                 notify.ltype = landing_type.SYSTEM_MSG;
-                string config_type = "";
+                //string config_type = "";
 
                 Notify red_remind;
                 red_remind.mtype = message_type.NOTIFYRED;
@@ -320,7 +306,7 @@ namespace tis {
                 switch (sMsg.action_type) {
                     case 0:
                         notify.content = from_name + " @了你";
-                        config_type.assign("at_notify");
+                        //config_type.assign("at_notify");
                         break;
                     case 1:
                         notify.content = from_name + " 给你发了一条私信";
@@ -328,23 +314,29 @@ namespace tis {
                         notify.uid = sMsg.from_uid;
                         red_remind.mtype = message_type.EMAILRED;
                         red_remind.uid = sMsg.from_uid;
-                        config_type.assign("pmsg_notify");
+                        //config_type.assign("pmsg_notify");
                         break;
                     case 2:
                         notify.content = from_name + " 评论了你的帖子";
-                        config_type.assign("comment_notify");
+                        //config_type.assign("comment_notify");
+                        notify.ltype = landing_type.COMMENT;
+                        red_remind.mtype = message_type.COMMENTRED;
                         break;
                     case 3:
                         notify.content = from_name + " 回复了你的评论";
-                        config_type.assign("comment_notify");
+                        //config_type.assign("comment_notify");
+                        notify.ltype = landing_type.COMMENT;
+                        red_remind.mtype = message_type.COMMENTRED;
                         break;
                     case 5:
                         notify.content = from_name + " 关注了你";
-                        config_type.assign("follow_notify");
+                        //config_type.assign("follow_notify");
                         break;
                     case 6:
                         notify.content = from_name + "赞了你";
-                        config_type.assign("zan_notify");
+                        //config_type.assign("zan_notify");
+                        notify.ltype = landing_type.ZAN;
+                        red_remind.mtype = message_type.ZANRED;
                         break;
                     case 7:
                         notify.content = "你的帖子被推荐到信息流了";
@@ -357,6 +349,12 @@ namespace tis {
                     case 9:
                         notify.content = "认证通过";
                         notify.ltype = landing_type.INDEX;
+                        break;
+                    case 10:
+                        notify.content = "你有一张照片登上了十大";
+                        break;
+                    case 11:
+                        notify.content = "有一张照片登上了十大,这里有一份你的功劳";
                         break;
                     default:
                         break;
@@ -376,7 +374,7 @@ namespace tis {
                        (single_notify_request.device_type == 1 && can_push(sMsg.to_uid.at(i), config_type))) {
                         _push_client->single_notify(single_notify_request);
                     }*/
-                    if (can_push(sMsg.to_uid.at(i), config_type)) {
+                    if (can_push(sMsg.to_uid.at(i))) {
                         _push_client->single_notify(single_notify_request);
                     }
                 }
@@ -395,7 +393,19 @@ namespace tis {
                 }
             }
             else {//其它系统消息加1
-                if (RedisProxy::REDIS_ZINCR_OK != _redis_proxy->zincr("ms:msg", buffer, strlen(buffer), 1)) {
+                string key="ms:msg";
+                switch (sMsg.action_type) {
+                    case 2:
+                    case 3:
+                        key = "ms:comment";
+                        break;
+                    case 6:
+                        key = "ms:zan";
+                        break;
+                    default:
+                        break;
+                }
+                if (RedisProxy::REDIS_ZINCR_OK != _redis_proxy->zincr(key.c_str(), buffer, strlen(buffer), 1)) {
                     LOG(ERROR) << "zincr ms:msg error" << sMsg.to_uid.at(i) << endl;
                 }
             }
@@ -451,7 +461,7 @@ namespace tis {
         return res;
     }
 
-    bool MessageServerHandler::can_push(int32_t uid, string config_type) {
+    bool MessageServerHandler::can_push(int32_t uid) {
         ThreadSpace* tsp = __get_thread_space();
         MysqlDAO* _mysql_dao = tsp->_mysql_dao;
         RedisProxy* _redis_proxy = tsp->_redis_proxy;
@@ -465,7 +475,7 @@ namespace tis {
         if (ret  == RedisProxy::REDIS_GET_NOT_EXIST) {
             config = "";
         } else if (ret == RedisProxy::REDIS_GET_ERR) {//reids 挂了从数据库读
-            LOG(WARNING) << "get config from mysql, uid[" << uid << "] config_type[" << config_type << "]";
+            LOG(WARNING) << "get config from mysql, uid[" << uid << "]"<<endl; 
             int mysql_ret = _mysql_dao->get_push_config(uid, config);
             if (mysql_ret != 0) {
                 LOG(ERROR) << "get push config error" << endl;
@@ -474,9 +484,6 @@ namespace tis {
         }
 
         if (config == "") {
-            if (config_type == "zan_notify") { //点赞通知默认不推送
-                return false;
-            }
             return true;
         }
 
@@ -487,20 +494,21 @@ namespace tis {
             return false;
         }
         int result = 1;
-        cJSON *is_push = cJSON_GetObjectItem(root_json, config_type.c_str());
+        cJSON *is_push = cJSON_GetObjectItem(root_json, "timelimit");
         if (is_push != NULL) {
             result = is_push->valueint;
-        }
-        else {
-            if (config_type == "zan_notify") { //点赞通知默认不推送
-                result = 0;
+            if(result == 1) {
+                time_t rawtime;
+                struct tm * timeinfo;
+                time ( &rawtime );
+                timeinfo = localtime ( &rawtime );
+                int hour = timeinfo->tm_hour;
+                if(hour>=23 || (hour >=0 && hour <=8))
+                    return false;
             }
         }
-        if (root_json) {
-            cJSON_Delete(root_json);
-        }
         
-        return result == 1;
+        return true;
     }
 
     int32_t MessageServerHandler::get_num(const int32_t uid, const int32_t queue_type) {
@@ -627,9 +635,14 @@ namespace tis {
             char uid_str[128];
             snprintf(uid_str, sizeof(uid_str), "%d", uid);
             key += uid_str;
+        } else if (9 == mType) {
+            key.assign("ms:zan");
+        } else if (10 == mType) {
+            key.assign("ms:comment");
         }
+
         else {
-            LOG(ERROR) << "mType error" << endl;
+            LOG(ERROR) << "mType error mType:" << mType << endl;
             return -1;
         }
 

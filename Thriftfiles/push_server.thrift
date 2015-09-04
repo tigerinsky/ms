@@ -10,12 +10,17 @@ enum LandingType { //跳转落地页类型
     PRIVATE_MSG=5,//私信详情页，需要给出私信的发起人的uid
     SYSTEM_MSG=6, //跳转到系统通知列表页
     USER=7, //跳转到个人主页，需要给出该人的uid
+    ZAN=8, //跳转到赞列表
+    COMMENT=9, //跳转到评论列表
 }
 
 enum MessageType { //消息类型
     NOTIFY= 1,//通知
     NOTIFYRED = 2,//系统通知小红点
     EMAILRED = 3, //私信小红点
+    ZANRED = 4, //点赞小红点
+    COMMENTRED = 5, //评论小红点
+    FRIENDRED = 6, //朋友小红点
 }
 
 enum DeviceType {

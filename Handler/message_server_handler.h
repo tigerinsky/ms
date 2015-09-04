@@ -67,7 +67,7 @@ class MessageServerHandler : virtual public MessageServerIf {
   //生成好友推荐的推送文案
   string generate_friend_notify_content(vector<int32_t> uids);
 
-  bool can_push(int32_t uid, string config_type);
+  bool can_push(int32_t uid);
 
   //关注和私信通知蓝鲸小秘书
   /*int admin_notify(int16_t type, int16_t flow,

@@ -276,7 +276,7 @@ namespace tis {
 
             //系统消息入数据库(私信除外)
             if (ActionType::MAIL != sMsg.action_type
-                    && ActionType::ARCHIEVE_ABOUT> sMsg.action_type) {
+                    && ActionType::ARCHIEVE_ABOUT>= sMsg.action_type) {
                 int ret = _mysql_dao->insert_system_message(sMsg.from_uid, from_name.c_str(),
                         sMsg.action_type, sMsg.to_uid.at(i), to_name.c_str(), sMsg.content_id,
                         time_now, time_now);
@@ -351,10 +351,10 @@ namespace tis {
                         notify.ltype = landing_type.INDEX;
                         break;
                     case 10:
-                        notify.content = "你有一张照片登上了十大";
+                        notify.content = "你发布的照片被评选为十大";
                         break;
                     case 11:
-                        notify.content = "有一张照片登上了十大,这里有一份你的功劳";
+                        notify.content = "你投票的照片被评选为十大";
                         break;
                     default:
                         break;
